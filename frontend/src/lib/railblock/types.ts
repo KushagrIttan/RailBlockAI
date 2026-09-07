@@ -28,6 +28,8 @@ export interface BackendScheduledBlock {
   status: "Scheduled" | "Shadow Block" | "Conflict Detected" | "Deferred";
   shadowBlockGroup: string | null;
   conflictReason: string | null;
+  /** Train IDs whose headway period brackets this block's gap (from the optimizer). */
+  blockingTrainIds: string[];
 }
 
 export interface BackendOptimizationResult {

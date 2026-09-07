@@ -109,12 +109,54 @@ export function WorkQueue({
         })}
 
         {/* Cleared items */}
-        {cleared.map((conflict) => (
-          <div key={conflict.id} className="flex items-center gap-2.5 px-4 py-3 text-xs text-muted-foreground/60">
-            <CheckCircle2 className="size-4 text-success" />
-            Decision recorded
+        {cleared.length > 0 && (
+          <div className="border-t border-border bg-gray-50/60 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50">
+            Resolved by engine
           </div>
-        ))}
+        )}
+        {cleared.map((conflict) => {
+          const rec = recommendations.find((r) => r.conflictId === conflict.id);
+          return (
+            <button
+              key={conflict.id}
+              onClick={() => onSelect(conflict.id)}
+              className={`w-full px-4 py-3 text-left transition-colors hover:bg-gray-50 ${
+                selectedId === conflict.id ? "bg-accent shadow-[inset_3px_0_0_#16a34a]" : ""
+              }`}
+            >
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      Maintenance decision
+                    </span>
+                    <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200">
+                      resolved
+                    </span>
+                  </div>
+                  {rec && (
+                    <p className="mt-0.5 text-xs text-muted-foreground/70 line-clamp-2">
+                      {rec.strategy}
+                    </p>
+                  )}
+                  <div className="mt-1 flex items-center gap-3 text-[10px] text-muted-foreground/50">
+                    <span className="flex items-center gap-1">
+                      <span className="size-1.5 rounded-full bg-muted-foreground/30" />
+                      {conflict.sector}
+                    </span>
+                    {rec && (
+                      <span className="flex items-center gap-1">
+                        <span className="size-1.5 rounded-full bg-emerald-400" />
+                        {rec.confidence >= 0.75 ? "High confidence" : "Moderate confidence"}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </button>
+          );
+        })}
 
         {!conflicts.length && (
           <p className="px-4 py-8 text-center text-xs text-muted-foreground">

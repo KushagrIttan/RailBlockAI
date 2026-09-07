@@ -73,42 +73,44 @@ export function blocksToConflicts(blocks: BackendScheduledBlock[]): Conflict[] {
 }
 
 /**
- * Map a list of backend ScheduledBlocks to UI ShadowBlocks.
- * The replay planning horizon begins at 08:00 and uses 15-minute slots.
+ * Map a backend ScheduledBlock to a UI ShadowBlock.
+ *
+ * All positioning is derived from the real scheduledStart timestamp returned
+ * by the optimizer. No case-ID-specific overrides or hardcoded slot numbers.
+ * The replay planning window anchors at 08:00 with 15-minute slots.
  */
 function blockToShadowBlock(block: BackendScheduledBlock, index: number): ShadowBlock {
-  const isScheduled = block.status === "Scheduled" || block.status === "Shadow Block";
-  let startSlot = 0;
-  let span = Math.max(1, Math.ceil(block.durationMinutes / 15));
-  let status: "scheduled" | "blocked" | "deferred" = "scheduled";
-  let blockingTrainNumbers: string[] = [];
-  let customLabel = `${block.department} work`;
+  const span = Math.max(1, Math.ceil(block.durationMinutes / 15));
+  const WINDOW_ANCHOR_HOUR = 8;
 
-  if (isScheduled && block.scheduledStart && !block.scheduledStart.startsWith("0001")) {
-    const start = new Date(block.scheduledStart);
-    const windowAnchorHour = 8;
-    const minutesSinceAnchor =
-      ((start.getHours() - windowAnchorHour + 24) % 24) * 60 + start.getMinutes();
-    startSlot = Math.max(0, Math.min(SLOT_COUNT - 1, Math.floor(minutesSinceAnchor / 15)));
-    status = "scheduled";
-    customLabel = block.taskId === "CASE-OHE-001" ? "OHE Wire Defect (Approved)" : `${block.department} (Scheduled)`;
-  } else if (block.taskId === "CASE-SIGNAL-001") {
-    startSlot = 4; // 09:00 morning peak
-    span = 3;
-    status = "blocked";
-    blockingTrainNumbers = ["64152", "64414"];
-    customLabel = "Signal & Telecom (Blocked)";
-  } else if (block.taskId === "CASE-TRACK-001") {
-    startSlot = 8; // 10:00
-    span = 4;
+  let startSlot = 0;
+  let status: "scheduled" | "blocked" | "deferred" = "scheduled";
+
+  if (block.status === "Deferred") {
+    // Deferred blocks have no real time — place them off the visible area so
+    // they don't overlap real work; the status colour communicates the issue.
+    startSlot = 0;
     status = "deferred";
-    blockingTrainNumbers = ["04942", "64404"];
-    customLabel = "Track Engineering (Deferred)";
+  } else if (block.scheduledStart && !block.scheduledStart.startsWith("0001")) {
+    const start = new Date(block.scheduledStart);
+    const minutesSinceAnchor =
+      ((start.getHours() - WINDOW_ANCHOR_HOUR + 24) % 24) * 60 + start.getMinutes();
+    startSlot = Math.max(0, Math.min(SLOT_COUNT - 1, Math.floor(minutesSinceAnchor / 15)));
+    status = block.status === "Conflict Detected" ? "blocked" : "scheduled";
   } else {
-    startSlot = Math.min(SLOT_COUNT - span, 4 + index * 4);
+    // Fallback for unexpected states: spread across the timeline.
+    startSlot = Math.min(SLOT_COUNT - span, index * 4);
     status = block.status === "Conflict Detected" ? "blocked" : "deferred";
-    customLabel = `${block.department} (${block.status})`;
   }
+
+  // Human-readable label derived entirely from backend data.
+  const statusSuffix: Record<BackendScheduledBlock["status"], string> = {
+    "Scheduled":        "Scheduled",
+    "Shadow Block":     "Shadow",
+    "Conflict Detected": "Blocked",
+    "Deferred":         "Deferred",
+  };
+  const label = `${block.department} (${statusSuffix[block.status]})`;
 
   return {
     id: block.blockId ?? `sb-${index}`,
@@ -119,10 +121,11 @@ function blockToShadowBlock(block: BackendScheduledBlock, index: number): Shadow
     severity: block.criticalityScore >= 0.8 ? "critical" : "warning",
     status,
     probability: block.criticalityScore,
-    label: customLabel,
+    label,
     department: block.department,
     conflictReason: block.conflictReason ?? undefined,
-    blockingTrainNumbers,
+    // Use the train IDs the optimizer identified as bracketing this gap.
+    blockingTrainNumbers: block.blockingTrainIds ?? [],
     resolved: false,
     dayIndex: blockDayIndex(block.blockId),
   };
