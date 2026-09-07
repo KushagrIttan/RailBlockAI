@@ -138,32 +138,51 @@ export default function App() {
     setTimeout(() => {
       setSchedule((prev) => {
         if (!prev) return prev;
-        const steps = activeRecommendation.steps;
+
+        // Find the raw backend block so we can read its real scheduledStart.
+        const rawBlock = prev.blocks?.find((b) => b.blockId === activeConflict.blockId);
+
+        // Derive the approved slot position from the real timestamp — same
+        // math as blockToShadowBlock, no hardcoded offsets.
+        let approvedStartSlot: number | null = null;
+        let approvedSpan: number | null = null;
+        if (rawBlock && rawBlock.scheduledStart && !rawBlock.scheduledStart.startsWith("0001")) {
+          const start = new Date(rawBlock.scheduledStart);
+          const minutesSinceAnchor =
+            ((start.getHours() - 8 + 24) % 24) * 60 + start.getMinutes();
+          approvedStartSlot = Math.max(0, Math.min(SLOT_COUNT - 1, Math.floor(minutesSinceAnchor / 15)));
+          approvedSpan = Math.max(1, Math.ceil((rawBlock.durationMinutes) / 15));
+        }
+
         return {
           ...prev,
           kpis: {
             ...prev.kpis,
             activeConflicts: Math.max(0, prev.kpis.activeConflicts - 1),
-            avgDelaySavedMinutes: Math.round((prev.kpis.avgDelaySavedMinutes + activeRecommendation.delaySavedMinutes / 4) * 10) / 10,
-            throughputEfficiencyPct: Math.round(Math.min(99.9, prev.kpis.throughputEfficiencyPct + activeRecommendation.throughputDeltaPct) * 10) / 10,
+            avgDelaySavedMinutes:
+              Math.round((prev.kpis.avgDelaySavedMinutes + activeRecommendation.delaySavedMinutes) * 10) / 10,
+            throughputEfficiencyPct:
+              Math.round(Math.min(99.9, prev.kpis.throughputEfficiencyPct + activeRecommendation.throughputDeltaPct) * 10) / 10,
           },
+          // Mark the conflict resolved — removes it from the work queue.
           conflicts: prev.conflicts.map((c) =>
             c.id === activeConflict.id ? { ...c, resolved: true } : c,
           ),
-          shadowBlocks: prev.shadowBlocks.map((sb) =>
-            sb.id === activeConflict.blockId ? { ...sb, resolved: true } : sb,
-          ),
-          trains: prev.trains.map((t) => {
-            const step = steps.find((s) => s.trainNumber === t.number);
-            if (!step) return t;
-            if (step.action.toLowerCase().includes("hold") || step.action.toLowerCase().includes("shunt")) {
-              return { ...t, startSlot: t.startSlot + 2, status: "held" as const, delayMinutes: t.delayMinutes + 4 };
-            }
-            if (step.action.toLowerCase().includes("advance") || step.action.toLowerCase().includes("recover")) {
-              return { ...t, startSlot: Math.max(0, t.startSlot - 1), status: "rerouted" as const, delayMinutes: Math.max(0, t.delayMinutes - 3) };
-            }
-            return { ...t, status: "on-time" as const };
+          // Relocate the shadow block to its approved slot and turn it green.
+          // resolved stays false so it remains visible on the Gantt.
+          shadowBlocks: prev.shadowBlocks.map((sb) => {
+            if (sb.id !== activeConflict.blockId) return sb;
+            return {
+              ...sb,
+              status: "scheduled" as const,
+              startSlot: approvedStartSlot ?? sb.startSlot,
+              span: approvedSpan ?? sb.span,
+              label: `${sb.department ?? "Maintenance"} (Approved)`,
+              blockingTrainNumbers: [],
+            };
           }),
+          // Trains are not mutated — their positions come from the backend
+          // timetable and don't change when a maintenance block is approved.
         };
       });
       setApproving("done");
@@ -173,8 +192,8 @@ export default function App() {
       );
       pushLog(
         mlFeed
-          ? `Maintenance decision recorded — ML risk ${mlFeed.mlScore.toFixed(2)} (${mlFeed.tier}).`
-          : "Maintenance decision recorded in this prototype scenario.",
+          ? `Maintenance window approved — ML risk ${mlFeed.mlScore.toFixed(2)} (${mlFeed.tier}). Block relocated on chart.`
+          : `Maintenance window approved. Block relocated to scheduled slot on chart.`,
         "success",
       );
       setTimeout(() => setApproving("idle"), 1800);

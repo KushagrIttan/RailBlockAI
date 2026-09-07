@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock3,
+  ShieldCheck,
   TrainFront,
   Wrench,
 } from "lucide-react";
@@ -50,8 +51,11 @@ export function TrackView({
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
   })();
 
+  // Include resolved blocks in the active selection so the callout bar still
+  // shows what was resolved rather than jumping to the next unresolved item.
   const activeBlock =
     shadowBlocks.find((sb) => sb.conflictId === selectedConflictId) ??
+    shadowBlocks.find((sb) => !sb.resolved) ??
     shadowBlocks[0] ??
     null;
 
@@ -82,21 +86,23 @@ export function TrackView({
         </span>
         {shadowBlocks.map((sb, idx) => {
           const isSelected = activeBlock?.id === sb.id;
-          const statusBadge =
-            sb.status === "scheduled"
+          const statusBadge = sb.resolved
+            ? "border-gray-300 bg-gray-50 text-gray-400 line-through"
+            : sb.status === "scheduled"
               ? "border-green-400 bg-green-100 text-green-800"
               : sb.status === "blocked"
                 ? "border-red-400 bg-red-100 text-red-800"
                 : "border-amber-400 bg-amber-100 text-amber-800";
 
-          const icon =
-            sb.status === "scheduled" ? (
-              <CheckCircle2 className="size-3 text-green-600" />
-            ) : sb.status === "blocked" ? (
-              <AlertOctagon className="size-3 text-red-600" />
-            ) : (
-              <Clock3 className="size-3 text-amber-600" />
-            );
+          const icon = sb.resolved ? (
+            <ShieldCheck className="size-3 text-gray-400" />
+          ) : sb.status === "scheduled" ? (
+            <CheckCircle2 className="size-3 text-green-600" />
+          ) : sb.status === "blocked" ? (
+            <AlertOctagon className="size-3 text-red-600" />
+          ) : (
+            <Clock3 className="size-3 text-amber-600" />
+          );
 
           return (
             <button
@@ -104,7 +110,9 @@ export function TrackView({
               onClick={() => onSelectConflict?.(sb.conflictId)}
               className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium transition-all cursor-pointer ${
                 isSelected
-                  ? "border-primary bg-primary/10 text-primary font-semibold ring-1 ring-primary shadow-xs"
+                  ? sb.resolved
+                    ? "border-gray-400 bg-gray-100 text-gray-500 ring-1 ring-gray-400 shadow-xs"
+                    : "border-primary bg-primary/10 text-primary font-semibold ring-1 ring-primary shadow-xs"
                   : `${statusBadge} hover:opacity-90`
               }`}
             >
@@ -112,6 +120,11 @@ export function TrackView({
               <span>
                 Case {idx + 1}: {sb.label}
               </span>
+              {sb.resolved && (
+                <span className="ml-0.5 rounded bg-gray-200 px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-gray-500 no-underline" style={{ textDecoration: "none" }}>
+                  resolved
+                </span>
+              )}
             </button>
           );
         })}
@@ -155,7 +168,9 @@ export function TrackView({
 
         {sectors.map((sector, idx) => {
           const rowTrains = trains.filter((t) => t.sector === sector);
-          const rowShadows = shadowBlocks.filter((sb) => sb.sector === sector && !sb.resolved);
+          // Include resolved blocks — they stay on the chart with a "resolved" style.
+          const rowShadows = shadowBlocks.filter((sb) => sb.sector === sector);
+          const unresolvedCount = rowShadows.filter((sb) => !sb.resolved).length;
 
           return (
             <div
@@ -169,7 +184,11 @@ export function TrackView({
                   {sectionLabel(sector)}
                 </span>
                 <span className="mt-0.5 text-[10px] text-muted-foreground/60">
-                  {rowShadows.length} situations
+                  {unresolvedCount > 0
+                    ? `${unresolvedCount} situation${unresolvedCount !== 1 ? "s" : ""}`
+                    : rowShadows.length > 0
+                      ? "all resolved"
+                      : "no situations"}
                 </span>
               </div>
 
@@ -187,6 +206,34 @@ export function TrackView({
                 {/* Maintenance / Situation blocks on the timeline */}
                 {rowShadows.map((sb) => {
                   const isSelected = activeBlock?.id === sb.id;
+
+                  // ── Resolved: show a faded "solved" ghost on the chart ──────
+                  if (sb.resolved) {
+                    return (
+                      <button
+                        key={sb.id}
+                        onClick={() => onSelectConflict?.(sb.conflictId)}
+                        title={`${sb.label} · Resolved by the optimization engine`}
+                        className={`absolute top-2 z-20 flex h-9.5 items-center gap-1.5 overflow-hidden rounded-md px-2 text-left text-[10px] font-semibold transition-all cursor-pointer
+                          border border-gray-300 bg-gray-50 text-gray-400 opacity-70
+                          ${isSelected ? "ring-2 ring-gray-400 shadow-sm opacity-90" : "hover:opacity-85"}`}
+                        style={{
+                          left: `${(sb.startSlot / SLOT_COUNT) * 100}%`,
+                          width: `${(sb.span / SLOT_COUNT) * 100}%`,
+                        }}
+                      >
+                        <ShieldCheck className="size-3 shrink-0 text-emerald-500" />
+                        <div className="flex flex-col overflow-hidden leading-tight">
+                          <span className="truncate line-through decoration-gray-400">{sb.label}</span>
+                          <span className="text-[8.5px] font-semibold text-emerald-600 no-underline">
+                            ✔ Resolved
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  }
+
+                  // ── Active (unresolved) block ────────────────────────────────
                   let styleClass = "";
                   let icon = <AlertTriangle className="size-2.5 shrink-0" />;
                   let statusTag = "";
@@ -289,14 +336,18 @@ export function TrackView({
       {activeBlock && (
         <div
           className={`flex items-start gap-2.5 border-t px-5 py-2.5 text-xs transition-colors ${
-            activeBlock.status === "scheduled"
-              ? "border-green-300 bg-green-100 text-green-900"
-              : activeBlock.status === "blocked"
-                ? "border-red-300 bg-red-100 text-red-900"
-                : "border-amber-300 bg-amber-100 text-amber-900"
+            activeBlock.resolved
+              ? "border-emerald-300 bg-emerald-50 text-emerald-900"
+              : activeBlock.status === "scheduled"
+                ? "border-green-300 bg-green-100 text-green-900"
+                : activeBlock.status === "blocked"
+                  ? "border-red-300 bg-red-100 text-red-900"
+                  : "border-amber-300 bg-amber-100 text-amber-900"
           }`}
         >
-          {activeBlock.status === "scheduled" ? (
+          {activeBlock.resolved ? (
+            <ShieldCheck className="size-4 shrink-0 text-emerald-600 mt-0.5" />
+          ) : activeBlock.status === "scheduled" ? (
             <CheckCircle2 className="size-4 shrink-0 text-green-600 mt-0.5" />
           ) : activeBlock.status === "blocked" ? (
             <AlertOctagon className="size-4 shrink-0 text-red-600 mt-0.5" />
@@ -306,11 +357,13 @@ export function TrackView({
           <div className="flex-1">
             <span className="font-semibold">{activeBlock.label}: </span>
             <span className="opacity-90">
-              {activeBlock.status === "scheduled"
-                ? "Safe gap detected between 11:10 and 12:55. A 45-minute window is approved with 0 minutes train delay."
-                : activeBlock.status === "blocked"
-                  ? "Attempted slot during morning rush (09:00). Blocked by dense EMU commuter traffic (Trains 64152 & 64414 highlighted with red CLASH tags)."
-                  : "Requires 60 minutes continuous possession. Blocked by EMU Special 04942. Deferred to scheduled off-peak or overnight window."}
+              {activeBlock.resolved
+                ? "Solution accepted — the optimization engine's suggested maintenance window has been confirmed. This block remains visible on the chart as a resolved decision."
+                : activeBlock.status === "scheduled"
+                  ? "Safe gap detected between 11:10 and 12:55. A 45-minute window is approved with 0 minutes train delay."
+                  : activeBlock.status === "blocked"
+                    ? "Attempted slot during morning rush (09:00). Blocked by dense EMU commuter traffic (Trains 64152 & 64414 highlighted with red CLASH tags)."
+                    : "Requires 60 minutes continuous possession. Blocked by EMU Special 04942. Deferred to scheduled off-peak or overnight window."}
             </span>
           </div>
         </div>
@@ -330,6 +383,11 @@ export function TrackView({
           <span className="flex items-center gap-1.5">
             <span className="size-2 rounded-sm border border-dashed border-amber-500 bg-amber-200" />
             Deferred (Needs Longer Gap)
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="size-2 rounded-sm border border-gray-300 bg-gray-50" />
+            <span className="text-emerald-600 font-semibold">✔</span>
+            Resolved by Engine
           </span>
           <span className="flex items-center gap-1.5">
             <span className="rounded bg-red-600 px-1 text-[8px] font-bold text-white">

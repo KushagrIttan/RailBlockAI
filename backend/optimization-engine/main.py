@@ -1006,7 +1006,7 @@ def optimize_replay(request: ReplayOptimizationRequest) -> OptimizationResult:
     )
 
 
-def _camel_case_block(block: ScheduledBlock) -> dict:
+def _camel_case_block(block: ScheduledBlock, blocking_train_ids: Optional[List[str]] = None) -> dict:
     return {
         "blockId": block.block_id, "taskId": block.task_id, "department": block.department,
         "trackSection": block.track_section, "locationKm": block.location_km,
@@ -1015,6 +1015,9 @@ def _camel_case_block(block: ScheduledBlock) -> dict:
         "criticalityScore": block.criticality_score, "windowId": block.window_id,
         "status": block.status.value, "shadowBlockGroup": block.shadow_block_group,
         "conflictReason": block.conflict_reason,
+        # Train IDs whose headway brackets this block's gap — used by the
+        # frontend Gantt to highlight clashing trains without hardcoding them.
+        "blockingTrainIds": blocking_train_ids or [],
     }
 
 
@@ -1154,6 +1157,33 @@ def _compute_triage(request: ReplayOptimizationRequest, result: OptimizationResu
 def _replay_response(request: ReplayOptimizationRequest, result: OptimizationResult) -> dict:
     profiles = {profile.id: profile for profile in request.procedure_profiles}
     cases = {case.case_id: case for case in request.maintenance_cases}
+
+    # ── Build per-day gaps once so we can look up blocking trains per block ──
+    days = _horizon_planning_days(request)
+    gaps_by_day: Dict[int, List[dict]] = {}
+    for d in range(days):
+        shifted = request.model_copy(deep=True)
+        shifted.replay_context.planning_start += timedelta(days=d)
+        shifted.replay_context.planning_end += timedelta(days=d)
+        for m in shifted.train_movements:
+            m.scheduled_entry += timedelta(days=d)
+            m.scheduled_exit += timedelta(days=d)
+        gaps_by_day[d] = _derive_replay_gaps(shifted)
+
+    horizon_minutes = max(
+        1,
+        (request.replay_context.planning_end - request.replay_context.planning_start).total_seconds() / 60,
+    )
+
+    def _blocking_trains_for_block(block: ScheduledBlock, day: int) -> List[str]:
+        """Return the train IDs whose headway period brackets this block's gap."""
+        if block.status == ScheduleStatus.DEFERRED or block.scheduled_start == datetime.min:
+            return []
+        for gap in gaps_by_day.get(day, []):
+            if gap["start"] <= block.scheduled_start < gap["end"]:
+                return list(gap["occupied_by_train_ids"])
+        return []
+
     recommendations = []
     for block in result.schedule:
         case = cases[block.task_id]
@@ -1164,11 +1194,24 @@ def _replay_response(request: ReplayOptimizationRequest, result: OptimizationRes
         if profile.power_block_required: requirements.append("electrical isolation")
         if profile.disconnection_notice_required: requirements.append("equipment disconnection notice")
         if profile.permit_to_work_required: requirements.append("formal safety clearance")
+
+        day_match = re.search(r"-d(\d+)(?:-DEFERRED)?$", block.block_id)
+        day = int(day_match.group(1)) if day_match else 0
+
+        # Real metrics: work minutes scheduled = disruption avoided vs ad-hoc;
+        # throughput gain = share of the day's usable window this block fills.
+        delay_saved = round(float(block.duration_minutes), 1) if is_scheduled else 0.0
+        throughput_delta = round(
+            (block.duration_minutes / horizon_minutes) * 100, 1
+        ) if is_scheduled else 0.0
+
         recommendations.append({
             "id": f"REC-{block.block_id}", "conflictId": f"case-{block.block_id}",
             "strategy": f"Use the first suitable gap in the saved timetable for {case.description}" if is_scheduled else "No safe maintenance time is available in this saved timetable",
-            "confidence": 0.82 if is_scheduled else 0.25, "delaySavedMinutes": 0.0,
-            "throughputDeltaPct": 0.0, "computeMs": 1,
+            "confidence": 0.82 if is_scheduled else 0.25,
+            "delaySavedMinutes": delay_saved,
+            "throughputDeltaPct": throughput_delta,
+            "computeMs": 1,
             "steps": [
                 {"trainNumber": "Saved timetable", "action": "Keep clear", "detail": "Keep the selected gap clear of scheduled trains, including its safety buffer."},
                 {"trainNumber": "Safety checks", "action": "Confirm", "detail": f"This work needs: {', '.join(requirements)}."},
@@ -1274,7 +1317,17 @@ def _replay_response(request: ReplayOptimizationRequest, result: OptimizationRes
         "totalTasks": result.total_tasks, "scheduledTasks": result.scheduled_tasks,
         "conflictsDetected": result.conflicts_detected,
         "assetAvailabilityGain": result.asset_availability_gain,
-        "schedule": [_camel_case_block(block) for block in result.schedule],
+        "schedule": [
+            _camel_case_block(
+                block,
+                _blocking_trains_for_block(
+                    block,
+                    int(re.search(r"-d(\d+)(?:-DEFERRED)?$", block.block_id).group(1))
+                    if re.search(r"-d(\d+)(?:-DEFERRED)?$", block.block_id) else 0,
+                ),
+            )
+            for block in result.schedule
+        ],
         "recommendations": recommendations,
         "dayBreakdown": day_breakdown,
         "mlStats": ml_stats,
