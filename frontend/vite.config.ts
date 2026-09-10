@@ -9,7 +9,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5053',
+        // Overridable via frontend/.env → VITE_API_TARGET (see .env.example).
+        target: process.env.VITE_API_TARGET ?? 'http://localhost:5053',
         changeOrigin: true,
         secure: false,
       }

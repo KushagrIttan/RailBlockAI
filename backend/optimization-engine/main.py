@@ -26,6 +26,12 @@ import re
 from enum import Enum
 from collections import defaultdict
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # picks up backend/optimization-engine/.env (see .env.example)
+except ImportError:
+    pass
+
 logger = logging.getLogger("railblock")
 
 class _UnavailablePriorityModel:

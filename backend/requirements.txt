@@ -1,6 +1,10 @@
-# Python backend — optimization engine (FastAPI)
-# The .NET API (RailBlockAI.Api) is not installed via pip.
-fastapi>=0.115.0
-uvicorn[standard]>=0.32.0
-pydantic>=2.9.0
-httpx>=0.27.0        # async HTTP client — used to pull data from .NET /api/optimization/data
+# RailBlock AI — Python optimization engine (FastAPI) + ML prioritizer.
+# The .NET API (backend/RailBlockAI.Api) is a .NET 10 project — restore with `dotnet restore`, not pip.
+# The frontend (frontend/) is Node/Vite — install with `npm install`.
+fastapi>=0.115,<1
+uvicorn[standard]>=0.32
+pydantic>=2.9,<3
+httpx>=0.27            # async HTTP client — pulls task/window data from the .NET /api/optimization/data endpoint
+scikit-learn>=1.3      # ML prioritizer: GradientBoostingRegressor + IsotonicRegression + StandardScaler
+numpy>=1.26            # feature vectors / metrics in backend/ml and the optimization engine
+python-dotenv>=1.0     # loads backend/optimization-engine/.env (ports, DOTNET_API_BASE)
