@@ -270,14 +270,14 @@ export default function App() {
 
           {/* Hero banner */}
           <div
-            className="mx-6 mt-6 overflow-hidden rounded-xl bg-blue-50 border border-blue-100"
+            className="mx-6 mt-6 overflow-hidden rounded-xl bg-blue-50 border border-blue-100 dark:bg-[#0f1a2e] dark:border-[#223a5f]"
             style={{ height: "140px" }}
           >
             <div className="relative h-full w-full overflow-hidden">
               {/* Corridor title overlaid */}
               <div className="absolute bottom-5 left-6">
                 <p className="text-[11px] font-medium uppercase tracking-widest text-blue-400">Maintenance Planning</p>
-                <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-800">
+                <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
                   {corridor.label}
                 </h1>
               </div>
@@ -286,7 +286,7 @@ export default function App() {
 
           {/* Error banner */}
           {fetchError && (
-            <div role="alert" className="mx-6 mt-4 flex flex-col gap-3 rounded-lg border border-red-200 bg-red-50 px-5 py-4">
+            <div role="alert" className="mx-6 mt-4 flex flex-col gap-3 rounded-lg border border-red-200 bg-red-50 px-5 py-4 dark:border-red-800 dark:bg-red-950">
               <div className="flex items-start gap-3">
                 <ServerCrash className="mt-0.5 size-5 shrink-0 text-destructive" />
                 <div className="flex-1 space-y-1">
@@ -300,7 +300,7 @@ export default function App() {
                 </div>
                 <Button size="sm" variant="outline" disabled={loading}
                   onClick={() => { const c = { value: false }; void loadSchedule(corridorId, horizon, c); }}
-                  className="shrink-0 border-red-200 text-destructive hover:bg-red-50">
+                  className="shrink-0 border-red-200 text-destructive hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-950">
                   <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Retry
                 </Button>
               </div>
@@ -357,7 +357,7 @@ export default function App() {
 
           {/* Loading indicator */}
           {loading && !fetchError && (
-            <div className="mx-6 mt-4 flex items-center gap-3 rounded-lg border border-border bg-white px-5 py-3">
+            <div className="mx-6 mt-4 flex items-center gap-3 rounded-lg border border-border bg-card px-5 py-3">
               <RefreshCw className="size-4 animate-spin text-muted-foreground" />
               <p className="text-sm text-muted-foreground">Preparing the saved timetable scenario…</p>
             </div>

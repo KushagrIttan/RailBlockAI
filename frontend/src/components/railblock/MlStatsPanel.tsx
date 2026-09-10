@@ -2,10 +2,10 @@ import { Brain } from "lucide-react";
 import type { MlStats, MlTier } from "@/lib/railblock/types";
 
 const TIER_BG: Record<MlTier, string> = {
-  critical: "bg-red-100 text-red-700 border-red-200",
-  high: "bg-orange-100 text-orange-700 border-orange-200",
-  watch: "bg-amber-100 text-amber-700 border-amber-200",
-  low: "bg-slate-100 text-slate-500 border-slate-200",
+  critical: "bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
+  high: "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800",
+  watch: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
+  low: "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
 };
 
 const TIER_DOT: Record<MlTier, string> = {
@@ -18,7 +18,7 @@ const TIER_DOT: Record<MlTier, string> = {
 const STATUS_STYLE: Record<string, string> = {
   Scheduled: "bg-success/15 text-success",
   Deferred: "bg-destructive/10 text-destructive",
-  "Shadow Block": "bg-indigo-100 text-indigo-700",
+  "Shadow Block": "bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300",
 };
 
 export function MlStatsPanel({
@@ -38,7 +38,7 @@ export function MlStatsPanel({
   return (
     <div className="panel-surface overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-border bg-gray-50/60 px-4 py-2.5">
+      <div className="flex items-center gap-2 border-b border-border bg-muted/60 px-4 py-2.5">
         <Brain className="size-3.5 text-primary" />
         <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
           ML Decision Intelligence
@@ -142,7 +142,7 @@ export function MlStatsPanel({
       </div>
 
       {/* Live footer */}
-      <div className="border-t border-border bg-gray-50/60 px-4 py-2 text-[10px] text-muted-foreground">
+      <div className="border-t border-border bg-muted/60 px-4 py-2 text-[10px] text-muted-foreground">
         Live: {stats.decisionsMade} decisions · {approvedCount} approved · {pendingCount} pending
       </div>
     </div>

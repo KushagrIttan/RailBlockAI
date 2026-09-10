@@ -83,7 +83,7 @@ function StatPill({
   accent: string;
 }) {
   return (
-    <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 py-3 shadow-xs ${accent}`}>
+    <div className={`flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-xs ${accent}`}>
       <div className="shrink-0">{icon}</div>
       <div className="min-w-0">
         <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -129,7 +129,7 @@ export function MonthView({
   return (
     <div className="panel-surface overflow-hidden">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-gray-100 px-5 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted px-5 py-3">
         <div className="flex items-center gap-2">
           <CalendarRange className="size-4 text-primary" />
           <h2 className="text-base font-semibold text-foreground tracking-tight">
@@ -142,7 +142,7 @@ export function MonthView({
       </div>
 
       {/* KPI strip */}
-      <div className="grid grid-cols-2 gap-3 border-b border-border bg-white px-5 py-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 border-b border-border bg-card px-5 py-4 sm:grid-cols-4">
         <StatPill
           icon={<CheckCircle2 className="size-5 text-green-600" />}
           label="Scheduled"
@@ -409,7 +409,7 @@ export function MonthView({
       </div>
 
       {/* Week pill row */}
-      <div className="flex flex-wrap gap-2 border-t border-border bg-gray-50/60 px-5 py-3">
+      <div className="flex flex-wrap gap-2 border-t border-border bg-muted/60 px-5 py-3">
         {weekBuckets.map((w, i) => {
           const isSelected = i === selectedWeekIdx;
           const isPeak = i === peakWeekIdx;
@@ -423,7 +423,7 @@ export function MonthView({
               className={`flex flex-col items-center rounded-lg border px-4 py-1.5 transition-all cursor-pointer ${
                 isSelected
                   ? "border-violet-400 bg-violet-50 ring-1 ring-violet-300 shadow-xs"
-                  : "border-border bg-white hover:bg-accent/40"
+                  : "border-border bg-card hover:bg-accent/40"
               }`}
             >
               <span

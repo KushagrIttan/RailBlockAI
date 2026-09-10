@@ -17,7 +17,7 @@ export function LogStream({ logs }: { logs: LogEntry[] }) {
 
   return (
     <div className="panel-surface overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-border bg-gray-50/60 px-4 py-2.5">
+      <div className="flex items-center gap-2 border-b border-border bg-muted/60 px-4 py-2.5">
         <Terminal className="size-3.5 text-primary" />
         <span className="text-sm font-semibold text-foreground tracking-tight">
           Activity Log

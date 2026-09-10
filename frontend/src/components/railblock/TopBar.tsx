@@ -1,4 +1,4 @@
-import { CircleHelp, Gauge, RefreshCw } from "lucide-react";
+import { CircleHelp, Gauge, Moon, RefreshCw, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTheme } from "@/hooks/use-theme";
 import { CORRIDORS } from "@/lib/railblock/service";
 
 export function TopBar({
@@ -29,11 +30,13 @@ export function TopBar({
   windowLabel: string;
   onOpenGuide: () => void;
 }) {
+  const { theme, toggle } = useTheme();
+
   return (
-    <div className="flex h-14 shrink-0 items-center gap-4 border-b border-border bg-white px-6">
+    <div className="flex h-14 shrink-0 items-center gap-4 border-b border-border bg-card px-6">
       {/* Corridor selector */}
       <Select value={corridorId} onValueChange={setCorridorId}>
-        <SelectTrigger className="w-52 bg-white text-sm shadow-none">
+        <SelectTrigger className="w-52 bg-card text-sm shadow-none">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -72,10 +75,20 @@ export function TopBar({
         </span>
       </div>
 
+      {/* Theme toggle */}
+      <button
+        onClick={toggle}
+        title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+      >
+        {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+        {theme === "dark" ? "Light" : "Dark"}
+      </button>
+
       {/* Help */}
       <button
         onClick={onOpenGuide}
-        className="ml-auto flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-gray-50 hover:text-foreground"
+        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       >
         <CircleHelp className="size-4" />
         How this works

@@ -51,7 +51,7 @@ function RollupStrip({ rollup }: { rollup: TriageQueue["rollup"] }) {
   return (
     <div className="grid grid-cols-3 gap-px border-b border-border bg-border sm:grid-cols-6">
       {tiles.map(({ key, label, value, dot }) => (
-        <div key={key} className="flex flex-col items-center gap-1 bg-white px-3 py-2.5">
+        <div key={key} className="flex flex-col items-center gap-1 bg-card px-3 py-2.5">
           <span className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
             <span className={`size-1.5 rounded-full ${dot}`} />
             {label}
@@ -90,11 +90,11 @@ function TriageRow({ item }: { item: TriageItem }) {
   const tier = item.triageTier;
 
   return (
-    <div className={`overflow-hidden rounded-md border bg-white ${TIER_RING[tier]}`}>
+    <div className={`overflow-hidden rounded-md border bg-card ${TIER_RING[tier]}`}>
       {/* Collapsed header — always visible */}
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50/70 transition-colors cursor-pointer"
+        className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted/70 transition-colors cursor-pointer"
       >
         {/* Tier dot */}
         <span className={`size-2 shrink-0 rounded-full ${TIER_DOT[tier]}`} />
@@ -243,7 +243,7 @@ export function TriagePanel({ triage }: { triage: TriageQueue | null | undefined
   return (
     <div className="panel-surface overflow-hidden">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-gray-100 px-5 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted px-5 py-3">
         <div className="flex items-center gap-2">
           <ShieldAlert className="size-4 text-primary" />
           <h2 className="text-base font-semibold text-foreground tracking-tight">
@@ -266,7 +266,7 @@ export function TriagePanel({ triage }: { triage: TriageQueue | null | undefined
       <RollupStrip rollup={rollup} />
 
       {/* Tier filter pills */}
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-border bg-white px-5 py-2.5">
+      <div className="flex flex-wrap items-center gap-1.5 border-b border-border bg-card px-5 py-2.5">
         <span className="mr-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
           Filter:
         </span>
@@ -297,7 +297,7 @@ export function TriagePanel({ triage }: { triage: TriageQueue | null | undefined
         )}
       </div>
 
-      <p className="border-t border-border bg-gray-50/60 px-5 py-2 text-[10px] text-muted-foreground/60">
+      <p className="border-t border-border bg-muted/60 px-5 py-2 text-[10px] text-muted-foreground/60">
         Scores: 0.45 × ML risk + 0.25 × train exposure + 0.15 × age + 0.15 × safety requirements.
         Synthetic data only — not live telemetry.
       </p>
@@ -318,10 +318,11 @@ function FilterPill({
   return (
     <button
       onClick={onClick}
+      title={value}
       className={`flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold transition-colors cursor-pointer ${
         active
           ? "border-primary bg-primary/10 text-primary"
-          : "border-border bg-white text-muted-foreground hover:bg-accent/40"
+          : "border-border bg-card text-muted-foreground hover:bg-accent/40"
       }`}
     >
       {dot && <span className={`size-1.5 rounded-full ${dot}`} />}

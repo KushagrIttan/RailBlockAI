@@ -89,7 +89,7 @@ export function DecisionPanel({
         </p>
 
         {/* Confidence bar */}
-        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div
             className="h-full rounded-full bg-success transition-all duration-700"
             style={{ width: `${recommendation.confidence * 100}%` }}
@@ -120,26 +120,26 @@ export function DecisionPanel({
 
         {/* Simulation result */}
         {simulation && (
-          <div className="mt-4 rounded-lg border border-sky-200 bg-sky-50 px-4 py-3">
-            <p className="num text-xs text-sky-700">{simulation}</p>
+          <div className="mt-4 rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 dark:border-sky-800 dark:bg-sky-950">
+            <p className="num text-xs text-sky-700 dark:text-sky-300">{simulation}</p>
           </div>
         )}
 
         {/* Actions */}
         {rejectMode ? (
-          <div className="mt-4 flex flex-col gap-2 rounded-lg border border-red-200 bg-red-50 p-4">
+          <div className="mt-4 flex flex-col gap-2 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950">
             <input
               type="text"
               placeholder="Why does this suggested time not work?"
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
             <div className="flex gap-2">
               <Button
                 onClick={() => { onReject(rejectReason); setRejectMode(false); setRejectReason(""); }}
                 disabled={!rejectReason.trim()}
-                className="bg-destructive text-white hover:bg-destructive/90"
+                className="bg-destructive text-white hover:bg-destructive/90 dark:text-[#380d0d]"
               >
                 Record rejection
               </Button>
@@ -153,7 +153,7 @@ export function DecisionPanel({
             <Button
               onClick={onApprove}
               disabled={approving !== "idle"}
-              className="relative flex-1 overflow-hidden bg-success text-white hover:bg-success/90"
+              className="relative flex-1 overflow-hidden bg-success text-white hover:bg-success/90 dark:text-[#052e1f]"
             >
               {approving === "working" && (
                 <span className="animate-sweep absolute inset-y-0 w-1/3 bg-white/20" />
@@ -192,7 +192,7 @@ export function DecisionPanel({
 
 function Metric({ label, value, tone }: { label: string; value: string; tone: string }) {
   return (
-    <div className="rounded-lg bg-gray-50 px-3 py-2">
+    <div className="rounded-lg bg-muted px-3 py-2">
       <div className="text-[9px] uppercase tracking-wide text-muted-foreground/60">{label}</div>
       <div className={`num text-sm font-semibold ${tone}`}>{value}</div>
     </div>

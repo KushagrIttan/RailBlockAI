@@ -47,7 +47,7 @@ function StatPill({
   accent: string;
 }) {
   return (
-    <div className={`flex items-center gap-3 rounded-lg border bg-white px-4 py-3 shadow-xs ${accent}`}>
+    <div className={`flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-xs ${accent}`}>
       <div className="shrink-0">{icon}</div>
       <div className="min-w-0">
         <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -87,7 +87,7 @@ export function WeekView({
   return (
     <div className="panel-surface overflow-hidden">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-gray-100 px-5 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted px-5 py-3">
         <div className="flex items-center gap-2">
           <CalendarDays className="size-4 text-primary" />
           <h2 className="text-base font-semibold text-foreground tracking-tight">
@@ -100,7 +100,7 @@ export function WeekView({
       </div>
 
       {/* KPI strip */}
-      <div className="grid grid-cols-2 gap-3 border-b border-border bg-white px-5 py-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 border-b border-border bg-card px-5 py-4 sm:grid-cols-4">
         <StatPill
           icon={<CheckCircle2 className="size-5 text-green-600" />}
           label="Scheduled"
@@ -185,7 +185,7 @@ export function WeekView({
             )}
 
             <Bar dataKey="scheduled" name="scheduled" stackId="a" radius={[0, 0, 0, 0]} maxBarSize={40}>
-              {dayBreakdown.map((entry, index) => (
+              {dayBreakdown.map((_entry, index) => (
                 <Cell
                   key={`cell-s-${index}`}
                   fill={index === peakDay ? "#16a34a" : "#22c55e"}
@@ -195,7 +195,7 @@ export function WeekView({
               ))}
             </Bar>
             <Bar dataKey="deferred" name="deferred" stackId="a" radius={[4, 4, 0, 0]} maxBarSize={40}>
-              {dayBreakdown.map((entry, index) => (
+              {dayBreakdown.map((_entry, index) => (
                 <Cell
                   key={`cell-d-${index}`}
                   fill={index === peakDay ? "#ea580c" : "#f97316"}
@@ -249,7 +249,7 @@ export function WeekView({
               }
             />
             <Bar dataKey="workMinutes" name="workMinutes" radius={[4, 4, 0, 0]} maxBarSize={40}>
-              {dayBreakdown.map((entry, index) => (
+              {dayBreakdown.map((_entry, index) => (
                 <Cell
                   key={`cell-wm-${index}`}
                   fill="#6366f1"
@@ -263,7 +263,7 @@ export function WeekView({
       </div>
 
       {/* Day pill row */}
-      <div className="flex flex-wrap gap-2 border-t border-border bg-gray-50/60 px-5 py-3">
+      <div className="flex flex-wrap gap-2 border-t border-border bg-muted/60 px-5 py-3">
         {dayBreakdown.map((day, i) => {
           const isSelected = i === selectedDay;
           const isPeak = i === peakDay;
@@ -275,7 +275,7 @@ export function WeekView({
               className={`flex flex-col items-center rounded-lg border px-3 py-1.5 text-center transition-all cursor-pointer ${
                 isSelected
                   ? "border-indigo-400 bg-indigo-50 ring-1 ring-indigo-300 shadow-xs"
-                  : "border-border bg-white hover:bg-accent/40"
+                  : "border-border bg-card hover:bg-accent/40"
               }`}
             >
               <span

@@ -1,5 +1,17 @@
 import { SendHorizonal } from "lucide-react";
-import type { DemoIssueConstraint } from "@/lib/railblock/types";
+
+/** Local shape for this demo panel (kept compiling for reuse; not mounted by App yet). */
+export interface DemoIssueConstraint {
+  case_id: string;
+  urgency: "emergency" | "urgent" | "planned";
+  estimated_work_minutes: number;
+  procedure_profile_id: string;
+  description: string;
+  department: string;
+  section_id: string;
+  location_reference: string;
+  required_resources: string[];
+}
 
 const URGENCY_STYLE: Record<DemoIssueConstraint["urgency"], string> = {
   emergency: "bg-red-50 text-destructive border-red-200",
@@ -33,7 +45,7 @@ export function IssueConstraintsPanel({ issues }: { issues: DemoIssueConstraint[
         {issues.map((issue) => (
           <div
             key={issue.case_id}
-            className="rounded-lg border border-border bg-gray-50/60 px-3.5 py-2.5"
+            className="rounded-lg border border-border bg-muted/60 px-3.5 py-2.5"
           >
             <div className="flex flex-wrap items-center gap-2">
               <span className="num text-xs font-semibold text-foreground">

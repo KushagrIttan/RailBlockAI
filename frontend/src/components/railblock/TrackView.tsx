@@ -11,9 +11,9 @@ import { SLOT_COUNT } from "@/lib/railblock/service";
 import type { ShadowBlock, Train } from "@/lib/railblock/types";
 
 const CLASS_STYLE: Record<Train["trainClass"], string> = {
-  freight: "border-gray-400 bg-gray-200 text-gray-700",
-  express: "border-blue-400 bg-blue-100 text-blue-700",
-  suburban: "border-sky-400 bg-sky-100 text-sky-700",
+  freight: "border-gray-400 bg-gray-200 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300",
+  express: "border-blue-400 bg-blue-100 text-blue-700 dark:border-blue-500 dark:bg-blue-950 dark:text-blue-300",
+  suburban: "border-sky-400 bg-sky-100 text-sky-700 dark:border-sky-500 dark:bg-sky-950 dark:text-sky-300",
 };
 
 function sectionLabel(section: string) {
@@ -62,7 +62,7 @@ export function TrackView({
   return (
     <div className="panel-surface overflow-hidden">
       {/* Section header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-gray-100 px-5 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted px-5 py-3">
         <div className="flex items-center gap-2">
           <Wrench className="size-4 text-primary" />
           <h2 className="text-base font-semibold text-foreground tracking-tight">
@@ -80,14 +80,14 @@ export function TrackView({
       </div>
 
       {/* Scenario switcher pills */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border bg-white px-5 py-2 text-xs">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card px-5 py-2 text-xs">
         <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-1">
           Scenarios:
         </span>
         {shadowBlocks.map((sb, idx) => {
           const isSelected = activeBlock?.id === sb.id;
           const statusBadge = sb.resolved
-            ? "border-gray-300 bg-gray-50 text-gray-400 line-through"
+            ? "border-gray-300 bg-muted text-gray-400 line-through"
             : sb.status === "scheduled"
               ? "border-green-400 bg-green-100 text-green-800"
               : sb.status === "blocked"
@@ -111,7 +111,7 @@ export function TrackView({
               className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium transition-all cursor-pointer ${
                 isSelected
                   ? sb.resolved
-                    ? "border-gray-400 bg-gray-100 text-gray-500 ring-1 ring-gray-400 shadow-xs"
+                    ? "border-gray-400 bg-muted text-gray-500 ring-1 ring-gray-400 shadow-xs"
                     : "border-primary bg-primary/10 text-primary font-semibold ring-1 ring-primary shadow-xs"
                   : `${statusBadge} hover:opacity-90`
               }`}
@@ -131,7 +131,7 @@ export function TrackView({
       </div>
 
       {/* Time axis */}
-      <div className="flex border-b border-border bg-gray-50/40">
+      <div className="flex border-b border-border bg-muted/40">
         <div className="w-32 shrink-0 border-r border-border px-4 py-2 text-[10px] font-medium uppercase tracking-widest text-muted-foreground/60">
           Track section
         </div>
@@ -176,7 +176,7 @@ export function TrackView({
             <div
               key={sector}
               className={`flex border-b border-border last:border-b-0 ${
-                idx % 2 === 0 ? "" : "bg-gray-50/40"
+                idx % 2 === 0 ? "" : "bg-muted/40"
               }`}
             >
               <div className="flex w-32 shrink-0 flex-col justify-center border-r border-border px-4 py-4">
@@ -215,7 +215,7 @@ export function TrackView({
                         onClick={() => onSelectConflict?.(sb.conflictId)}
                         title={`${sb.label} · Resolved by the optimization engine`}
                         className={`absolute top-2 z-20 flex h-9.5 items-center gap-1.5 overflow-hidden rounded-md px-2 text-left text-[10px] font-semibold transition-all cursor-pointer
-                          border border-gray-300 bg-gray-50 text-gray-400 opacity-70
+                          border border-gray-300 bg-muted text-gray-400 opacity-70
                           ${isSelected ? "ring-2 ring-gray-400 shadow-sm opacity-90" : "hover:opacity-85"}`}
                         style={{
                           left: `${(sb.startSlot / SLOT_COUNT) * 100}%`,
@@ -370,7 +370,7 @@ export function TrackView({
       )}
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-1.5 border-t border-border bg-gray-100 px-5 py-2 text-[10px] text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-1.5 border-t border-border bg-muted px-5 py-2 text-[10px] text-muted-foreground">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <span className="flex items-center gap-1.5">
             <span className="size-2 rounded-sm bg-green-500" />
@@ -385,7 +385,7 @@ export function TrackView({
             Deferred (Needs Longer Gap)
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2 rounded-sm border border-gray-300 bg-gray-50" />
+            <span className="size-2 rounded-sm border border-gray-300 bg-muted" />
             <span className="text-emerald-600 font-semibold">✔</span>
             Resolved by Engine
           </span>

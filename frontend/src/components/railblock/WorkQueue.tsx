@@ -39,7 +39,7 @@ export function WorkQueue({
           <div className="relative bg-blue-50/60 px-4 py-3">
             <button
               onClick={() => setShowBanner(false)}
-              className="absolute right-2 top-2 rounded p-1 text-muted-foreground/60 hover:bg-white hover:text-foreground"
+              className="absolute right-2 top-2 rounded p-1 text-muted-foreground/60 hover:bg-card hover:text-foreground"
               aria-label="Dismiss"
             >
               <X className="size-3.5" />
@@ -75,7 +75,7 @@ export function WorkQueue({
               className={`w-full px-4 py-3.5 text-left transition-colors ${
                 active
                   ? "bg-accent shadow-[inset_3px_0_0_#2563eb]"
-                  : "hover:bg-gray-50"
+                  : "hover:bg-muted"
               }`}
             >
               <div className="flex items-start gap-2.5">
@@ -110,7 +110,7 @@ export function WorkQueue({
 
         {/* Cleared items */}
         {cleared.length > 0 && (
-          <div className="border-t border-border bg-gray-50/60 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50">
+          <div className="border-t border-border bg-muted/60 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50">
             Resolved by engine
           </div>
         )}
@@ -120,7 +120,7 @@ export function WorkQueue({
             <button
               key={conflict.id}
               onClick={() => onSelect(conflict.id)}
-              className={`w-full px-4 py-3 text-left transition-colors hover:bg-gray-50 ${
+              className={`w-full px-4 py-3 text-left transition-colors hover:bg-muted ${
                 selectedId === conflict.id ? "bg-accent shadow-[inset_3px_0_0_#16a34a]" : ""
               }`}
             >

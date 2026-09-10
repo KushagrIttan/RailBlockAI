@@ -9,7 +9,7 @@ function NavLink({ label, icon, active, badge }: NavItem) {
       className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
         active
           ? "bg-accent font-medium text-primary"
-          : "text-muted-foreground hover:bg-gray-50 hover:text-foreground"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
     >
       <span className={`size-4 shrink-0 ${active ? "text-primary" : ""}`}>{icon}</span>
@@ -17,7 +17,7 @@ function NavLink({ label, icon, active, badge }: NavItem) {
       {badge !== undefined && (
         <span
           className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-            active ? "bg-primary/15 text-primary" : "bg-gray-100 text-muted-foreground"
+            active ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
           }`}
         >
           {badge}
@@ -45,7 +45,7 @@ function KpiChip({
           ? "bg-destructive"
           : "bg-primary";
   return (
-    <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
+    <div className="flex items-center justify-between rounded-lg bg-muted px-3 py-2">
       <span className="text-[11px] text-muted-foreground">{label}</span>
       <div className="flex items-center gap-1.5">
         <span className={`size-1.5 rounded-full ${dot}`} />
@@ -65,7 +65,7 @@ export function Sidebar({
   replayContext?: { corridorLabel: string; capturedAt: string } | undefined;
 }) {
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-white">
+    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-card">
       {/* Logo */}
       <div className="flex items-center gap-2.5 border-b border-border px-5 py-4">
         <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
@@ -140,7 +140,7 @@ export function Sidebar({
       <div className="border-t border-border px-4 py-3">
         <button
           onClick={onOpenGuide}
-          className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-xs text-muted-foreground transition-colors hover:bg-gray-50 hover:text-foreground"
+          className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <Activity className="size-4 text-success" />
           <span>How this works</span>

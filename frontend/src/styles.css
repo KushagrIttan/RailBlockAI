@@ -50,17 +50,17 @@
   --color-sidebar-ring: var(--ring);
 }
 
-/* ─── Light palette ───────────────────────────────────────────────────────── */
+/* ─── Light palette (soft off-white surfaces, never pure #fff) ─────────────── */
 :root {
   --radius: 0.5rem;
 
   --background: #f9fafb;
   --foreground: #111827;
 
-  --panel: #ffffff;
-  --card: #ffffff;
+  --panel: #fcfcfa;
+  --card: #fcfcfa;
   --card-foreground: #111827;
-  --popover: #ffffff;
+  --popover: #fcfcfa;
   --popover-foreground: #111827;
 
   /* Clean blue */
@@ -103,6 +103,56 @@
   --chart-5: var(--destructive);
 }
 
+/* ─── Dark palette (default theme — deep slate, off-white text) ────────────── */
+.dark {
+  --background: #0b0e15;
+  --foreground: #e8eaf0;
+
+  --panel: #111624;
+  --card: #121829;
+  --card-foreground: #e8eaf0;
+  --popover: #161c2e;
+  --popover-foreground: #e8eaf0;
+
+  --primary: #5f8dff;
+  --primary-foreground: #0a0f1c;
+
+  --secondary: #1a2236;
+  --secondary-foreground: #c7cddc;
+
+  --muted: #1a2236;
+  --muted-foreground: #8f97ad;
+
+  --accent: #152039;
+  --accent-foreground: #93b4ff;
+
+  --destructive: #f87171;
+  --destructive-foreground: #2a0e0e;
+
+  --success: #34d399;
+  --success-foreground: #06281c;
+
+  --warning: #fbbf24;
+  --warning-foreground: #2f1f04;
+
+  --border: #232c47;
+  --input: #232c47;
+  --ring: #5f8dff;
+
+  --grid-line: #1a2236;
+
+  /* Train class colors — brightened for dark surfaces */
+  --freight: #7aa8ff;
+  --express: #38bdf8;
+  --suburban: #38bdf8;
+
+  --chart-1: var(--freight);
+  --chart-2: var(--express);
+  --chart-3: var(--suburban);
+  --chart-4: var(--warning);
+  --chart-5: var(--destructive);
+}
+
 /* ─── Base ────────────────────────────────────────────────────────────────── */
 @layer base {
   * {
@@ -129,6 +179,12 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #d1d5db;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: #2a3350;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #38436a;
   }
 }
 
