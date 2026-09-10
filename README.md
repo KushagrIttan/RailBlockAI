@@ -1,5 +1,14 @@
 # RailBlock AI
 
+```
+______      _ _______ _            _     ___  _____
+| ___ \    (_) | ___ \ |          | |   / _ \|_   _|
+| |_/ /__ _ _| | |_/ / | ___   ___| | _/ /_\ \ | |
+|    // _` | | | ___ \ |/ _ \ / __| |/ /  _  | | |
+| |\ \ (_| | | | |_/ / | (_) | (__|   <| | | |_| |_
+\_| \_\__,_|_|_\____/|_|\___/ \___|_|\_\_| |_/\___/
+```
+
 Intelligent railway maintenance-block planning: an optimization engine that packs
 maintenance tasks into corridor windows (with shadow-block detection and ML-based
 prioritization), fronted by a .NET API and a React planning dashboard.
