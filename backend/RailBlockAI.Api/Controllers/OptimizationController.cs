@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RailBlockAI.Api.Models;
 using RailBlockAI.Api.Services;
-using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace RailBlockAI.Api.Controllers;
 
@@ -11,16 +9,13 @@ namespace RailBlockAI.Api.Controllers;
 [Route("api/[controller]")]
 public class OptimizationController : ControllerBase
 {
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<OptimizationController> _logger;
     private readonly IReplayBundleService _replayBundleService;
 
     public OptimizationController(
-        IHttpClientFactory httpClientFactory,
         ILogger<OptimizationController> logger,
         IReplayBundleService replayBundleService)
     {
-        _httpClientFactory = httpClientFactory;
         _logger = logger;
         _replayBundleService = replayBundleService;
     }
@@ -28,61 +23,62 @@ public class OptimizationController : ControllerBase
     [HttpPost("generate")]
     public async Task<IActionResult> GenerateOptimizedSchedule(
         [FromQuery] string? horizon = null,
-        [FromQuery] int? days = null)
+        [FromQuery] int? days = null,
+        [FromQuery] string? corridorId = null)
     {
-        _logger.LogInformation("=== Replay optimization request received (horizon: {Horizon}, days: {Days}) ===", horizon ?? "daily", days ?? 1);
+        _logger.LogInformation(
+            "=== Replay optimization request received (horizon: {Horizon}, days: {Days}, corridorId: {CorridorId}) ===",
+            horizon ?? "daily",
+            days ?? 1,
+            corridorId ?? "DLI-GZB");
 
-        var (json, error) = await ForwardReplayAsync("replay/optimize", horizon, days);
-        if (error != null)
-        {
-            return error;
-        }
+        var (json, error) = await ForwardReplayAsync("replay/optimize", corridorId, horizon, days);
+        if (error != null) return error;
 
         DataStore.LastOptimizedSchedule = json;
         _logger.LogInformation("Replay optimization complete.");
         return Content(json, "application/json");
     }
 
-    /// <summary>
-    /// Triage-only view of the replay plan: forwards the same bundle to the Python
-    /// /replay/triage endpoint and returns just the rollup + ranked item list. Useful
-    /// for feeding a triage queue without pulling the full schedule payload.
-    /// </summary>
     [HttpGet("triage")]
     public async Task<IActionResult> GetTriage(
         [FromQuery] string? horizon = null,
-        [FromQuery] int? days = null)
+        [FromQuery] int? days = null,
+        [FromQuery] string? corridorId = null)
     {
-        _logger.LogInformation("=== Triage request received (horizon: {Horizon}, days: {Days}) ===", horizon ?? "daily", days ?? 1);
+        _logger.LogInformation(
+            "=== Triage request received (horizon: {Horizon}, days: {Days}, corridorId: {CorridorId}) ===",
+            horizon ?? "daily",
+            days ?? 1,
+            corridorId ?? "DLI-GZB");
 
-        var (json, error) = await ForwardReplayAsync("replay/triage", horizon, days);
-        if (error != null)
-        {
-            return error;
-        }
+        var (json, error) = await ForwardReplayAsync("replay/triage", corridorId, horizon, days);
+        if (error != null) return error;
 
         return Content(json, "application/json");
     }
 
-    /// <summary>
-    /// Loads the frozen replay bundle, injects the planning horizon, forwards the
-    /// bundle to the given Python engine endpoint, and returns the raw JSON response.
-    /// </summary>
     private async Task<(string? Json, IActionResult? Error)> ForwardReplayAsync(
-        string pythonEndpoint, string? horizon, int? days)
+        string pythonEndpoint,
+        string? corridorId,
+        string? horizon,
+        int? days)
     {
         try
         {
-            using var replayBundle = await _replayBundleService.LoadAsync(HttpContext.RequestAborted);
+            // Load frozen replay bundle for the selected corridor.
+            using var replayBundle = await _replayBundleService.LoadAsync(corridorId ?? "DLI-GZB", HttpContext.RequestAborted);
             var context = replayBundle.RootElement.GetProperty("replay_context");
+
             _logger.LogInformation(
                 "Using frozen replay bundle for {Corridor}, captured {CapturedAt}",
                 context.GetProperty("corridor_id").GetString(),
                 context.GetProperty("captured_at").GetString());
 
-            // Inject the requested planning horizon into the forwarded bundle.
+            // Inject requested planning horizon into forwarded payload.
             var payload = System.Text.Json.Nodes.JsonNode.Parse(replayBundle.RootElement.GetRawText());
             var ctxNode = payload!["replay_context"]!;
+
             if (!string.IsNullOrWhiteSpace(horizon))
             {
                 ctxNode["horizon"] = horizon;
@@ -94,22 +90,38 @@ public class OptimizationController : ControllerBase
                 };
             }
 
-            var client = _httpClientFactory.CreateClient();
+            // Forward to Python engine.
+            // NOTE: http forwarding uses an HttpClient from the default factory
+            // registered in Program.cs.
+            var client = new System.Net.Http.HttpClient();
             client.Timeout = TimeSpan.FromSeconds(30);
 
-            using var request = new HttpRequestMessage(HttpMethod.Post, $"http://localhost:8000/{pythonEndpoint}")
+            using var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                $"http://localhost:8000/{pythonEndpoint}")
             {
-                Content = new StringContent(payload!.ToJsonString(), System.Text.Encoding.UTF8, "application/json")
+                Content = new StringContent(
+                    payload!.ToJsonString(),
+                    System.Text.Encoding.UTF8,
+                    "application/json")
             };
+
             var response = await client.SendAsync(request, HttpContext.RequestAborted);
 
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                _logger.LogError("Python engine returned {StatusCode} for {Endpoint}: {Error}",
-                    (int)response.StatusCode, pythonEndpoint, errorContent);
-                return (null, StatusCode((int)response.StatusCode,
-                    $"Python optimization engine returned an error ({(int)response.StatusCode}): {errorContent}"));
+                _logger.LogError(
+                    "Python engine returned {StatusCode} for {Endpoint}: {Error}",
+                    (int)response.StatusCode,
+                    pythonEndpoint,
+                    errorContent);
+
+                return (
+                    null,
+                    StatusCode(
+                        (int)response.StatusCode,
+                        $"Python optimization engine returned an error ({(int)response.StatusCode}): {errorContent}"));
             }
 
             var resultJson = await response.Content.ReadAsStringAsync(HttpContext.RequestAborted);
@@ -118,12 +130,12 @@ public class OptimizationController : ControllerBase
         catch (FileNotFoundException ex)
         {
             _logger.LogError(ex, "Replay bundle is missing.");
-            return (null, StatusCode(503, "Replay bundle is unavailable. Restore data/replay/dli-gzb/replay_bundle.json."));
+            return (null, StatusCode(503, "Replay bundle is unavailable for the selected corridor."));
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Could not reach the Python optimization engine at http://localhost:8000. Is it running?");
-            return (null, StatusCode(503, "Cannot connect to the Python optimization engine (http://localhost:8000). Start it with: cd backend/optimization-engine && python main.py"));
+            _logger.LogError(ex, "Could not reach the Python optimization engine.");
+            return (null, StatusCode(503, "Cannot connect to the Python optimization engine (http://localhost:8000)."));
         }
         catch (TaskCanceledException)
         {
@@ -137,42 +149,41 @@ public class OptimizationController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Returns tasks + corridor windows in the exact snake_case shape the Python engine expects.
-    /// Python can call GET http://localhost:5053/api/optimization/data to fetch its own input.
-    /// </summary>
     [HttpGet("data")]
     public IActionResult GetOptimizationData()
     {
-        var tasks = DataStore.MaintenanceTasks.Select(t => new {
-            task_id          = t.TaskId,
-            department       = t.Department,
-            task_type        = t.TaskType,
-            description      = t.Description,
-            track_section    = t.TrackSection,
-            location_km      = t.LocationKm,
+        var tasks = DataStore.MaintenanceTasks.Select(t => new
+        {
+            task_id = t.TaskId,
+            department = t.Department,
+            task_type = t.TaskType,
+            description = t.Description,
+            track_section = t.TrackSection,
+            location_km = t.LocationKm,
             duration_minutes = t.DurationMinutes,
             required_resources = t.RequiredResources,
-            priority         = t.Priority,
+            priority = t.Priority,
             criticality_score = t.CriticalityScore,
-            dependencies     = t.Dependencies,
-            requested_by     = t.RequestedBy,
-            requested_date   = t.RequestedDate
+            dependencies = t.Dependencies,
+            requested_by = t.RequestedBy,
+            requested_date = t.RequestedDate
         }).ToList();
 
-        var windows = DataStore.CorridorWindows.Select(w => new {
-            window_id        = w.WindowId,
-            track_section    = w.TrackSection,
-            available_start  = w.AvailableStart,
-            available_end    = w.AvailableEnd,
+        var windows = DataStore.CorridorWindows.Select(w => new
+        {
+            window_id = w.WindowId,
+            track_section = w.TrackSection,
+            available_start = w.AvailableStart,
+            available_end = w.AvailableEnd,
             duration_minutes = w.DurationMinutes,
-            window_type      = w.WindowType,
-            constraints      = w.Constraints
+            window_type = w.WindowType,
+            constraints = w.Constraints
         }).ToList();
 
         _logger.LogInformation(
             "Data endpoint called — returning {TaskCount} tasks and {WindowCount} corridor windows",
-            tasks.Count, windows.Count);
+            tasks.Count,
+            windows.Count);
 
         return Ok(new { tasks, corridor_windows = windows });
     }
@@ -180,7 +191,7 @@ public class OptimizationController : ControllerBase
     [HttpGet("current")]
     public IActionResult GetCurrentSchedule()
     {
-        return Ok(DataStore.LastOptimizedSchedule ?? new { message = "No schedule has been generated yet. POST /api/optimization/generate to run the optimizer." });
+        return Ok(DataStore.LastOptimizedSchedule ?? new { message = "No schedule has been generated yet." });
     }
 }
 

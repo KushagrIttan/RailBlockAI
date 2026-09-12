@@ -74,7 +74,7 @@ export function WorkQueue({
               onClick={() => onSelect(conflict.id)}
               className={`w-full px-4 py-3.5 text-left transition-colors ${
                 active
-                  ? "bg-accent shadow-[inset_3px_0_0_#2563eb]"
+                  ? "bg-accent shadow-[inset_3px_0_0_var(--primary)]"
                   : "hover:bg-muted"
               }`}
             >
@@ -121,7 +121,7 @@ export function WorkQueue({
               key={conflict.id}
               onClick={() => onSelect(conflict.id)}
               className={`w-full px-4 py-3 text-left transition-colors hover:bg-muted ${
-                selectedId === conflict.id ? "bg-accent shadow-[inset_3px_0_0_#16a34a]" : ""
+                selectedId === conflict.id ? "bg-accent shadow-[inset_3px_0_0_var(--success)]" : ""
               }`}
             >
               <div className="flex items-start gap-2.5">

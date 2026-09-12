@@ -21,6 +21,7 @@ import {
   SLOT_COUNT,
   fetchOptimizationSchedule,
   makeLog,
+  recordDecision,
 } from "@/lib/railblock/service";
 import { ApiError } from "@/lib/railblock/types";
 import type { LogEntry, OptimizationSchedule, PlanningHorizon } from "@/lib/railblock/types";
@@ -134,6 +135,17 @@ export default function App() {
   const handleApprove = () => {
     if (!schedule || !activeConflict || !activeRecommendation) return;
     setApproving("working");
+    // Persist the verdict to the backend decision log (fire-and-forget —
+    // the chart update below applies regardless, failures are logged).
+    recordDecision({
+      blockId: activeConflict.blockId,
+      corridorId,
+      horizon,
+      verdict: "approve",
+    }).then(
+      (receipt) => pushLog(`Decision #${receipt.id} recorded on the backend decision log.`, "success"),
+      (err) => pushLog(`Backend decision log unreachable (${err instanceof Error ? err.message : String(err)}); kept locally.`, "warn"),
+    );
     pushLog("Suggested maintenance plan accepted for this prototype scenario.", "info");
     setTimeout(() => {
       setSchedule((prev) => {
@@ -202,6 +214,16 @@ export default function App() {
 
   const handleReject = (reason: string) => {
     if (!schedule || !activeConflict) return;
+    recordDecision({
+      blockId: activeConflict.blockId,
+      corridorId,
+      horizon,
+      verdict: "reject",
+      reason,
+    }).then(
+      (receipt) => pushLog(`Rejection #${receipt.id} recorded on the backend decision log.`, "success"),
+      (err) => pushLog(`Backend decision log unreachable (${err instanceof Error ? err.message : String(err)}); kept locally.`, "warn"),
+    );
     pushLog(`Suggested maintenance plan rejected: ${reason}`, "warn");
     setSchedule((prev) => {
       if (!prev) return prev;
@@ -276,7 +298,7 @@ export default function App() {
             <div className="relative h-full w-full overflow-hidden">
               {/* Corridor title overlaid */}
               <div className="absolute bottom-5 left-6">
-                <p className="text-[11px] font-medium uppercase tracking-widest text-blue-400">Maintenance Planning</p>
+                <p className="text-[11px] font-medium uppercase tracking-widest text-blue-400 dark:text-blue-300/80">Maintenance Planning</p>
                 <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
                   {corridor.label}
                 </h1>

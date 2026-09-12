@@ -4,55 +4,413 @@
     "data_mode": "replay",
     "corridor_id": "DLI-GZB",
     "corridor_label": "Delhi Junction to Ghaziabad Junction",
-    "planning_start": "2026-09-06T08:00:00+05:30",
-    "planning_end": "2026-09-06T15:00:00+05:30",
-    "captured_at": "2026-09-06T12:00:00+05:30",
+    "planning_start": "2026-09-14T08:00:00+05:30",
+    "planning_end": "2026-09-14T15:00:00+05:30",
+    "captured_at": "2026-09-14T12:00:00+05:30",
     "source_system": "public_timetable_snapshot",
     "source_note": "Saved timetable scenario for a hackathon prototype; not a live railway control feed."
   },
   "corridor": {
     "section_id": "DLI-GZB-DN",
-    "from_station": { "code": "DLI", "name": "Delhi Junction", "latitude": 28.6600, "longitude": 77.2270 },
-    "to_station": { "code": "GZB", "name": "Ghaziabad Junction", "latitude": 28.7110, "longitude": 77.4330 },
+    "from_station": {
+      "code": "DLI",
+      "name": "Delhi Junction",
+      "latitude": 28.66,
+      "longitude": 77.227
+    },
+    "to_station": {
+      "code": "GZB",
+      "name": "Ghaziabad Junction",
+      "latitude": 28.711,
+      "longitude": 77.433
+    },
     "length_km": 20.4,
     "direction": "DLI_TO_GZB",
     "geometry_source": "OpenStreetMap-compatible station reference"
   },
   "train_movements": [
     {
-      "id": "svc-64152-20260906", "train_number": "64152", "train_name": "Delhi - Aligarh MEMU", "train_class": "MEMU",
-      "section_id": "DLI-GZB-DN", "direction": "DLI_TO_GZB", "scheduled_entry": "2026-09-06T08:30:00+05:30", "scheduled_exit": "2026-09-06T09:09:00+05:30",
-      "source_system": "public_timetable_snapshot", "source_record_id": "indiarailinfo:dli-gzb:64152", "confidence": "third_party"
+      "id": "svc-64152-20260914-00",
+      "train_number": "64152",
+      "train_name": "Delhi - Aligarh MEMU",
+      "train_class": "MEMU",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T08:02:00+05:30",
+      "scheduled_exit": "2026-09-14T08:24:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:64152",
+      "confidence": "third_party"
     },
     {
-      "id": "svc-64414-20260906", "train_number": "64414", "train_name": "Delhi - Ghaziabad EMU", "train_class": "EMU",
-      "section_id": "DLI-GZB-DN", "direction": "DLI_TO_GZB", "scheduled_entry": "2026-09-06T08:40:00+05:30", "scheduled_exit": "2026-09-06T09:25:00+05:30",
-      "source_system": "public_timetable_snapshot", "source_record_id": "indiarailinfo:dli-gzb:64414", "confidence": "third_party"
+      "id": "svc-64414-20260914-01",
+      "train_number": "64414",
+      "train_name": "Delhi - Ghaziabad EMU",
+      "train_class": "EMU",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T08:10:00+05:30",
+      "scheduled_exit": "2026-09-14T08:32:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:64414",
+      "confidence": "third_party"
     },
     {
-      "id": "svc-64404-20260906", "train_number": "64404", "train_name": "Delhi - Ghaziabad EMU", "train_class": "EMU",
-      "section_id": "DLI-GZB-DN", "direction": "DLI_TO_GZB", "scheduled_entry": "2026-09-06T09:50:00+05:30", "scheduled_exit": "2026-09-06T10:35:00+05:30",
-      "source_system": "public_timetable_snapshot", "source_record_id": "railradar:64404", "confidence": "third_party"
+      "id": "svc-54055-20260914-02",
+      "train_number": "54055",
+      "train_name": "Delhi - Moradabad Passenger",
+      "train_class": "Passenger",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T08:22:00+05:30",
+      "scheduled_exit": "2026-09-14T08:45:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:54055",
+      "confidence": "third_party"
     },
     {
-      "id": "svc-04942-20260906", "train_number": "04942", "train_name": "Delhi - Ghaziabad EMU Special", "train_class": "EMU",
-      "section_id": "DLI-GZB-DN", "direction": "DLI_TO_GZB", "scheduled_entry": "2026-09-06T10:10:00+05:30", "scheduled_exit": "2026-09-06T10:55:00+05:30",
-      "source_system": "public_timetable_snapshot", "source_record_id": "indiarailinfo:04942", "confidence": "third_party"
+      "id": "svc-64154-20260914-03",
+      "train_number": "64154",
+      "train_name": "Delhi - Khurja MEMU",
+      "train_class": "MEMU",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T08:35:00+05:30",
+      "scheduled_exit": "2026-09-14T08:55:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:64154",
+      "confidence": "third_party"
     },
     {
-      "id": "svc-14521-20260906", "train_number": "14521", "train_name": "Ambala Cantt. Intercity Express", "train_class": "Express",
-      "section_id": "DLI-GZB-DN", "direction": "DLI_TO_GZB", "scheduled_entry": "2026-09-06T13:10:00+05:30", "scheduled_exit": "2026-09-06T14:02:00+05:30",
-      "source_system": "public_timetable_snapshot", "source_record_id": "railradar:14521", "confidence": "third_party"
+      "id": "svc-64404-20260914-04",
+      "train_number": "64404",
+      "train_name": "Ghaziabad - Delhi EMU",
+      "train_class": "EMU",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T08:45:00+05:30",
+      "scheduled_exit": "2026-09-14T09:05:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:64404",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64156-20260914-05",
+      "train_number": "64156",
+      "train_name": "Delhi - Aligarh MEMU",
+      "train_class": "MEMU",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T08:55:00+05:30",
+      "scheduled_exit": "2026-09-14T09:12:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:64156",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-14511-20260914-06",
+      "train_number": "14511",
+      "train_name": "Delhi - Udhampur Express",
+      "train_class": "Express",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T09:00:00+05:30",
+      "scheduled_exit": "2026-09-14T09:18:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:14511",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64416-20260914-07",
+      "train_number": "64416",
+      "train_name": "Delhi - Ghaziabad EMU",
+      "train_class": "EMU",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T13:32:00+05:30",
+      "scheduled_exit": "2026-09-14T13:54:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:64416",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64158-20260914-08",
+      "train_number": "64158",
+      "train_name": "Delhi - Khurja MEMU",
+      "train_class": "MEMU",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T13:40:00+05:30",
+      "scheduled_exit": "2026-09-14T14:02:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:64158",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-54057-20260914-09",
+      "train_number": "54057",
+      "train_name": "Delhi - Saharanpur Passenger",
+      "train_class": "Passenger",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T13:52:00+05:30",
+      "scheduled_exit": "2026-09-14T14:15:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:54057",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64406-20260914-10",
+      "train_number": "64406",
+      "train_name": "Ghaziabad - Delhi EMU",
+      "train_class": "EMU",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T14:02:00+05:30",
+      "scheduled_exit": "2026-09-14T14:22:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:64406",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64160-20260914-11",
+      "train_number": "64160",
+      "train_name": "Delhi - Aligarh MEMU",
+      "train_class": "MEMU",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T14:12:00+05:30",
+      "scheduled_exit": "2026-09-14T14:30:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:64160",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-14521-20260914-12",
+      "train_number": "14521",
+      "train_name": "Delhi - Udhampur Express",
+      "train_class": "Express",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T14:22:00+05:30",
+      "scheduled_exit": "2026-09-14T14:34:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:14521",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-GOODS-71-20260914-13",
+      "train_number": "GOODS-71",
+      "train_name": "Container Freight",
+      "train_class": "Freight",
+      "section_id": "DLI-GZB-DN",
+      "direction": "DLI_TO_GZB",
+      "scheduled_entry": "2026-09-14T14:30:00+05:30",
+      "scheduled_exit": "2026-09-14T14:52:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:dli-gzb:GOODS-71",
+      "confidence": "third_party"
     }
   ],
   "procedure_profiles": [
-    { "id": "track-planned-v1", "traffic_block_required": true, "power_block_required": false, "disconnection_notice_required": false, "permit_to_work_required": false, "minimum_setup_minutes": 15, "minimum_clearance_minutes": 15 },
-    { "id": "signal-failure-v1", "traffic_block_required": true, "power_block_required": false, "disconnection_notice_required": true, "permit_to_work_required": false, "minimum_setup_minutes": 10, "minimum_clearance_minutes": 10 },
-    { "id": "ohe-emergency-v1", "traffic_block_required": true, "power_block_required": true, "disconnection_notice_required": false, "permit_to_work_required": true, "minimum_setup_minutes": 15, "minimum_clearance_minutes": 15 }
+    {
+      "id": "track-planned-v1",
+      "traffic_block_required": true,
+      "power_block_required": false,
+      "disconnection_notice_required": false,
+      "permit_to_work_required": false,
+      "minimum_setup_minutes": 15,
+      "minimum_clearance_minutes": 15
+    },
+    {
+      "id": "signal-failure-v1",
+      "traffic_block_required": true,
+      "power_block_required": false,
+      "disconnection_notice_required": true,
+      "permit_to_work_required": false,
+      "minimum_setup_minutes": 10,
+      "minimum_clearance_minutes": 10
+    },
+    {
+      "id": "ohe-emergency-v1",
+      "traffic_block_required": true,
+      "power_block_required": true,
+      "disconnection_notice_required": false,
+      "permit_to_work_required": true,
+      "minimum_setup_minutes": 15,
+      "minimum_clearance_minutes": 15
+    }
   ],
   "maintenance_cases": [
-    { "case_id": "CASE-TRACK-001", "scenario_type": "planned_track", "department": "Engineering", "asset_type": "Track", "description": "Planned rail grinding", "section_id": "DLI-GZB-DN", "location_reference": "KM 8.0-9.0", "reported_at": "2026-09-06T08:00:00+05:30", "urgency": "planned", "estimated_work_minutes": 60, "required_resources": ["Rail grinding machine", "Engineering crew"], "procedure_profile_id": "track-planned-v1" },
-    { "case_id": "CASE-SIGNAL-001", "scenario_type": "signal_failure", "department": "Signal & Telecommunication", "asset_type": "Point machine", "description": "Point machine failure requiring inspection, repair and test", "section_id": "DLI-GZB-DN", "location_reference": "Sahibabad approach (SBB)", "reported_at": "2026-09-06T09:30:00+05:30", "urgency": "urgent", "estimated_work_minutes": 45, "required_resources": ["Signalling technician", "Point machine test kit"], "procedure_profile_id": "signal-failure-v1" },
-    { "case_id": "CASE-OHE-001", "scenario_type": "ohe_failure", "department": "Traction Distribution", "asset_type": "Overhead electric line contact wire", "description": "Overhead electric line contact-wire defect requiring electrical isolation and formal safety clearance", "section_id": "DLI-GZB-DN", "location_reference": "KM 14.0", "reported_at": "2026-09-06T11:00:00+05:30", "urgency": "emergency", "estimated_work_minutes": 45, "required_resources": ["Overhead electric line crew", "Insulation tester"], "procedure_profile_id": "ohe-emergency-v1" }
+    {
+      "case_id": "CASE-TRACK-001",
+      "scenario_type": "planned_track",
+      "department": "Engineering",
+      "asset_type": "Track",
+      "description": "Planned rail grinding",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 8.0-9.0",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 30,
+      "required_resources": [
+        "Rail grinding machine",
+        "Engineering crew"
+      ],
+      "procedure_profile_id": "track-planned-v1"
+    },
+    {
+      "case_id": "CASE-SIGNAL-001",
+      "scenario_type": "signal_fault",
+      "department": "Signal & Telecommunication",
+      "asset_type": "Signalling",
+      "description": "Point machine sluggish operation",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 9.5",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "urgent",
+      "estimated_work_minutes": 25,
+      "required_resources": [
+        "Signalling technician",
+        "Point machine test kit"
+      ],
+      "procedure_profile_id": "signal-failure-v1"
+    },
+    {
+      "case_id": "CASE-OHE-001",
+      "scenario_type": "ohe_damage",
+      "department": "Traction Distribution",
+      "asset_type": "OHE",
+      "description": "OHE contact wire burn mark",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 11.2",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "emergency",
+      "estimated_work_minutes": 35,
+      "required_resources": [
+        "Overhead electric line crew",
+        "Insulation tester"
+      ],
+      "procedure_profile_id": "ohe-emergency-v1"
+    },
+    {
+      "case_id": "CASE-TRACK-002",
+      "scenario_type": "planned_track",
+      "department": "Engineering",
+      "asset_type": "Track",
+      "description": "Ballast profiling and packing",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 12.9/9-13.3/3",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 25,
+      "required_resources": [
+        "Ballast regulator",
+        "Engineering crew"
+      ],
+      "procedure_profile_id": "track-planned-v1",
+      "recurrence_days": 7
+    },
+    {
+      "case_id": "CASE-SIGNAL-002",
+      "scenario_type": "signal_fault",
+      "department": "Signal & Telecommunication",
+      "asset_type": "Signalling",
+      "description": "Signal aspect failure - red not showing",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 14.0",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "emergency",
+      "estimated_work_minutes": 30,
+      "required_resources": [
+        "Signalling technician",
+        "Signal ladder crew"
+      ],
+      "procedure_profile_id": "signal-failure-v1"
+    },
+    {
+      "case_id": "CASE-OHE-002",
+      "scenario_type": "planned_ohe",
+      "department": "Traction Distribution",
+      "asset_type": "OHE",
+      "description": "OHE insulator cleaning",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 15.6-16.1",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 20,
+      "required_resources": [
+        "Overhead electric line crew"
+      ],
+      "procedure_profile_id": "ohe-emergency-v1",
+      "recurrence_days": 2
+    },
+    {
+      "case_id": "CASE-TRACK-003",
+      "scenario_type": "track_inspection",
+      "department": "Engineering",
+      "asset_type": "Track",
+      "description": "Ultrasonic rail flaw detection follow-up",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 17.3",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "urgent",
+      "estimated_work_minutes": 25,
+      "required_resources": [
+        "USFD testing team"
+      ],
+      "procedure_profile_id": "track-planned-v1"
+    },
+    {
+      "case_id": "CASE-SIGNAL-003",
+      "scenario_type": "planned_signal",
+      "department": "Signal & Telecommunication",
+      "asset_type": "Signalling",
+      "description": "Track circuit calibration",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 18.8",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 15,
+      "required_resources": [
+        "Signalling technician"
+      ],
+      "procedure_profile_id": "signal-failure-v1",
+      "recurrence_days": 3
+    },
+    {
+      "case_id": "CASE-OHE-003",
+      "scenario_type": "ohe_inspection",
+      "department": "Traction Distribution",
+      "asset_type": "OHE",
+      "description": "Feeder pillar maintenance",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 10.4",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "urgent",
+      "estimated_work_minutes": 30,
+      "required_resources": [
+        "Overhead electric line crew",
+        "Insulation tester"
+      ],
+      "procedure_profile_id": "ohe-emergency-v1"
+    },
+    {
+      "case_id": "CASE-TRACK-004",
+      "scenario_type": "planned_track",
+      "department": "Engineering",
+      "asset_type": "Track",
+      "description": "Fishplate greasing and bolt tightening",
+      "section_id": "DLI-GZB-DN",
+      "location_reference": "KM 13.9",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 20,
+      "required_resources": [
+        "Engineering crew"
+      ],
+      "procedure_profile_id": "track-planned-v1",
+      "recurrence_days": 2
+    }
   ]
 }

@@ -738,19 +738,26 @@ def _place_day(
     def _find_slot(case, required_minutes):
         best = None
         for i, gap in enumerate(gaps):
-            candidate_start = max(gap["start"], case.reported_at)
-            candidate_end = candidate_start + timedelta(minutes=required_minutes)
-            if candidate_end > gap["end"]:
-                continue
-            if not _time_free(candidate_start, candidate_end, gap_index=i):
-                continue
-            if not _resources_free(case.required_resources, candidate_start, candidate_end):
-                continue
-            left_margin = (candidate_start - gap["start"]).total_seconds() / 60.0
-            right_margin = (gap["end"] - candidate_end).total_seconds() / 60.0
-            fit = (min(left_margin, right_margin), -i)
-            if best is None or fit > best[0]:
-                best = (fit, i, candidate_start, candidate_end)
+            # Candidate starts: gap start, then just after each block already
+            # placed in this gap (first-fit scan forward). Without this the
+            # placer only ever tried the gap start — one block per gap.
+            starts = [max(gap["start"], case.reported_at)]
+            for u in used:
+                if u["gap_index"] == i and u["end"] > starts[0]:
+                    starts.append(max(u["end"], case.reported_at))
+            for candidate_start in sorted(set(starts)):
+                candidate_end = candidate_start + timedelta(minutes=required_minutes)
+                if candidate_end > gap["end"]:
+                    continue
+                if not _time_free(candidate_start, candidate_end, gap_index=i):
+                    continue
+                if not _resources_free(case.required_resources, candidate_start, candidate_end):
+                    continue
+                left_margin = (candidate_start - gap["start"]).total_seconds() / 60.0
+                right_margin = (gap["end"] - candidate_end).total_seconds() / 60.0
+                fit = (min(left_margin, right_margin), -i)
+                if best is None or fit > best[0]:
+                    best = (fit, i, candidate_start, candidate_end)
         return best
 
     def _make_block(case, profile, start, end, day_tag, status, window_id, reason):

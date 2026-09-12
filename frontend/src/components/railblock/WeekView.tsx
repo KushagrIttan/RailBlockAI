@@ -21,15 +21,15 @@ import type { DayBreakdown } from "@/lib/railblock/types";
 const chartConfig = {
   scheduled: {
     label: "Scheduled",
-    color: "#22c55e",
+    color: "var(--success)",
   },
   deferred: {
     label: "Deferred",
-    color: "#f97316",
+    color: "var(--warning)",
   },
   workMinutes: {
     label: "Work (min)",
-    color: "#6366f1",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
@@ -145,15 +145,15 @@ export function WeekView({
               if (idx !== undefined && idx !== null) onSelectDay(idx);
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 10, fill: "#6b7280" }}
+              tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: "#6b7280" }}
+              tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}
@@ -177,10 +177,10 @@ export function WeekView({
             {dayBreakdown[selectedDay] && (
               <ReferenceLine
                 x={dayBreakdown[selectedDay]!.label}
-                stroke="#6366f1"
+                stroke="var(--primary)"
                 strokeWidth={2}
                 strokeDasharray="4 2"
-                label={{ value: "viewing", position: "top", fontSize: 9, fill: "#6366f1" }}
+                label={{ value: "viewing", position: "top", fontSize: 9, fill: "var(--primary)" }}
               />
             )}
 
@@ -188,7 +188,7 @@ export function WeekView({
               {dayBreakdown.map((_entry, index) => (
                 <Cell
                   key={`cell-s-${index}`}
-                  fill={index === peakDay ? "#16a34a" : "#22c55e"}
+                  fill="var(--success)"
                   opacity={index === selectedDay ? 1 : 0.72}
                   cursor="pointer"
                 />
@@ -198,7 +198,7 @@ export function WeekView({
               {dayBreakdown.map((_entry, index) => (
                 <Cell
                   key={`cell-d-${index}`}
-                  fill={index === peakDay ? "#ea580c" : "#f97316"}
+                  fill="var(--warning)"
                   opacity={index === selectedDay ? 1 : 0.72}
                   cursor="pointer"
                 />
@@ -222,15 +222,15 @@ export function WeekView({
               if (idx !== undefined && idx !== null) onSelectDay(idx);
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 10, fill: "#6b7280" }}
+              tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: "#6b7280" }}
+              tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
               unit=" min"
@@ -252,7 +252,7 @@ export function WeekView({
               {dayBreakdown.map((_entry, index) => (
                 <Cell
                   key={`cell-wm-${index}`}
-                  fill="#6366f1"
+                  fill="var(--primary)"
                   opacity={index === selectedDay ? 1 : 0.6}
                   cursor="pointer"
                 />

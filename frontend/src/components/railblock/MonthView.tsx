@@ -23,18 +23,18 @@ import type { DayBreakdown } from "@/lib/railblock/types";
 // ─── Chart configs ────────────────────────────────────────────────────────────
 
 const dailyConfig = {
-  scheduled: { label: "Scheduled", color: "#22c55e" },
-  deferred: { label: "Deferred", color: "#f97316" },
+  scheduled: { label: "Scheduled", color: "var(--success)" },
+  deferred: { label: "Deferred", color: "var(--warning)" },
 } satisfies ChartConfig;
 
 const weeklyConfig = {
-  scheduled: { label: "Scheduled", color: "#22c55e" },
-  deferred: { label: "Deferred", color: "#f97316" },
-  workMinutes: { label: "Work (min)", color: "#6366f1" },
+  scheduled: { label: "Scheduled", color: "var(--success)" },
+  deferred: { label: "Deferred", color: "var(--warning)" },
+  workMinutes: { label: "Work (min)", color: "var(--primary)" },
 } satisfies ChartConfig;
 
 const trendConfig = {
-  availabilityGainPct: { label: "Availability gain %", color: "#6366f1" },
+  availabilityGainPct: { label: "Availability gain %", color: "var(--primary)" },
 } satisfies ChartConfig;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -196,15 +196,15 @@ export function MonthView({
               }
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="week"
-              tick={{ fontSize: 10, fill: "#6b7280" }}
+              tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: "#6b7280" }}
+              tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}
@@ -227,10 +227,10 @@ export function MonthView({
             {selectedWeekIdx >= 0 && weekBuckets[selectedWeekIdx] && (
               <ReferenceLine
                 x={weekBuckets[selectedWeekIdx]!.week}
-                stroke="#7c3aed"
+                stroke="var(--primary)"
                 strokeWidth={2}
                 strokeDasharray="4 2"
-                label={{ value: "viewing", position: "top", fontSize: 9, fill: "#7c3aed" }}
+                label={{ value: "viewing", position: "top", fontSize: 9, fill: "var(--primary)" }}
               />
             )}
 
@@ -238,7 +238,7 @@ export function MonthView({
               {weekBuckets.map((_, i) => (
                 <Cell
                   key={`cs-${i}`}
-                  fill={i === peakWeekIdx ? "#16a34a" : "#22c55e"}
+                  fill={i === peakWeekIdx ? "var(--success)" : "var(--success)"}
                   opacity={i === selectedWeekIdx ? 1 : 0.72}
                   cursor="pointer"
                 />
@@ -248,7 +248,7 @@ export function MonthView({
               {weekBuckets.map((_, i) => (
                 <Cell
                   key={`cd-${i}`}
-                  fill={i === peakWeekIdx ? "#ea580c" : "#f97316"}
+                  fill={i === peakWeekIdx ? "var(--warning)" : "var(--warning)"}
                   opacity={i === selectedWeekIdx ? 1 : 0.72}
                   cursor="pointer"
                 />
@@ -277,20 +277,20 @@ export function MonthView({
           >
             <defs>
               <linearGradient id="fillAvail" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.35} />
-                <stop offset="95%" stopColor="#6366f1" stopOpacity={0.04} />
+                <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.04} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 9, fill: "#9ca3af" }}
+              tick={{ fontSize: 9, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
               interval={4}
             />
             <YAxis
-              tick={{ fontSize: 9, fill: "#9ca3af" }}
+              tick={{ fontSize: 9, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
               unit="%"
@@ -312,7 +312,7 @@ export function MonthView({
             {dayBreakdown[selectedDay] && (
               <ReferenceLine
                 x={dayBreakdown[selectedDay]!.label}
-                stroke="#7c3aed"
+                stroke="var(--primary)"
                 strokeWidth={1.5}
                 strokeDasharray="4 2"
               />
@@ -320,11 +320,11 @@ export function MonthView({
             <Area
               type="monotone"
               dataKey="availabilityGainPct"
-              stroke="#6366f1"
+              stroke="var(--primary)"
               strokeWidth={2}
               fill="url(#fillAvail)"
               dot={false}
-              activeDot={{ r: 4, fill: "#6366f1", stroke: "#fff", strokeWidth: 2 }}
+              activeDot={{ r: 4, fill: "var(--primary)", stroke: "#fff", strokeWidth: 2 }}
               cursor="pointer"
             />
           </AreaChart>
@@ -349,16 +349,16 @@ export function MonthView({
               if (idx !== undefined && idx !== null) onSelectDay(idx);
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 8, fill: "#9ca3af" }}
+              tick={{ fontSize: 8, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
               interval={6}
             />
             <YAxis
-              tick={{ fontSize: 8, fill: "#9ca3af" }}
+              tick={{ fontSize: 8, fill: "var(--muted-foreground)" }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}
@@ -379,7 +379,7 @@ export function MonthView({
             {dayBreakdown[selectedDay] && (
               <ReferenceLine
                 x={dayBreakdown[selectedDay]!.label}
-                stroke="#7c3aed"
+                stroke="var(--primary)"
                 strokeWidth={1.5}
                 strokeDasharray="3 2"
               />
@@ -388,7 +388,7 @@ export function MonthView({
               {dayBreakdown.map((_, i) => (
                 <Cell
                   key={`ds-${i}`}
-                  fill="#22c55e"
+                  fill="var(--success)"
                   opacity={i === selectedDay ? 1 : 0.65}
                   cursor="pointer"
                 />
@@ -398,7 +398,7 @@ export function MonthView({
               {dayBreakdown.map((_, i) => (
                 <Cell
                   key={`dd-${i}`}
-                  fill="#f97316"
+                  fill="var(--warning)"
                   opacity={i === selectedDay ? 1 : 0.65}
                   cursor="pointer"
                 />

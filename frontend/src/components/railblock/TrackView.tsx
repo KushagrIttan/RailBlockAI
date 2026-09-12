@@ -17,7 +17,9 @@ const CLASS_STYLE: Record<Train["trainClass"], string> = {
 };
 
 function sectionLabel(section: string) {
-  return section === "DLI-GZB-DN" ? "Delhi → Ghaziabad" : section;
+  if (section === "DLI-GZB-DN") return "Delhi → Ghaziabad";
+  if (section === "NDLS-NDB-DN") return "New Delhi → Nizamuddin";
+  return section;
 }
 
 export function TrackView({

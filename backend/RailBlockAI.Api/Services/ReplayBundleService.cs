@@ -4,7 +4,7 @@ namespace RailBlockAI.Api.Services;
 
 public interface IReplayBundleService
 {
-    Task<JsonDocument> LoadAsync(CancellationToken cancellationToken = default);
+    Task<JsonDocument> LoadAsync(string corridorId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -21,14 +21,23 @@ public sealed class ReplayBundleService : IReplayBundleService
         _environment = environment;
     }
 
-    public async Task<JsonDocument> LoadAsync(CancellationToken cancellationToken = default)
+    public async Task<JsonDocument> LoadAsync(string corridorId, CancellationToken cancellationToken = default)
     {
+        var folder = corridorId?.Trim().ToUpperInvariant() switch
+        {
+            "DLI-GZB" => "dli-gzb",
+            "NDLS-NDB" => "ndls-ndb",
+            _ => "dli-gzb"
+        };
+
         var bundlePath = Path.GetFullPath(Path.Combine(
-            _environment.ContentRootPath, "..", "..", "data", "replay", "dli-gzb", "replay_bundle.json"));
+            _environment.ContentRootPath, "..", "..", "data", "replay", folder, "replay_bundle.json"));
 
         if (!File.Exists(bundlePath))
         {
-            throw new FileNotFoundException("Replay bundle was not found.", bundlePath);
+            throw new FileNotFoundException(
+                $"Replay bundle was not found for corridorId='{corridorId}'. Expected file: {bundlePath}",
+                bundlePath);
         }
 
         await using var stream = File.OpenRead(bundlePath);

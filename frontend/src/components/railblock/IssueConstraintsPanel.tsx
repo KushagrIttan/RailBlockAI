@@ -15,8 +15,8 @@ export interface DemoIssueConstraint {
 
 const URGENCY_STYLE: Record<DemoIssueConstraint["urgency"], string> = {
   emergency: "bg-red-50 text-destructive border-red-200",
-  urgent: "bg-amber-50 text-warning border-amber-200",
-  planned: "bg-sky-50 text-sky-700 border-sky-200",
+  urgent: "bg-amber-50 text-warning border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
+  planned: "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800",
 };
 
 /**

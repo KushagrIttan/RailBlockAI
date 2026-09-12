@@ -37,6 +37,11 @@ export const CORRIDORS: Corridor[] = [
     label: "DLI → GZB (Delhi Junction – Ghaziabad)",
     sectors: ["DLI-GZB-DN"],
   },
+  {
+    id: "NDLS-NDB",
+    label: "NDLS → NDB (New Delhi – Nizamuddin)",
+    sectors: ["NDLS-NDB-DN"],
+  },
 ];
 
 export const SLOT_COUNT = 28; // 7 hours × 4 slots/hour (15 min each)
@@ -176,6 +181,8 @@ export async function fetchOptimizationSchedule(
 
   const params = new URLSearchParams({ horizon });
   params.set("days", String(days ?? HORIZON_DAYS[horizon]));
+  // Tell .NET which frozen replay bundle to load.
+  params.set("corridorId", corridorId);
   const endpoint = `${GENERATE_ENDPOINT}?${params.toString()}`;
 
   try {
@@ -279,6 +286,60 @@ export async function fetchOptimizationSchedule(
     mlStats: apiResult.mlStats ?? null,
     triage: apiResult.triage ?? null,
   };
+}
+
+// ─── Decision recording ──────────────────────────────────────────────────────
+
+export interface RecordDecisionInput {
+  blockId: string;
+  taskId?: string;
+  corridorId?: string;
+  horizon?: string;
+  verdict: "approve" | "reject";
+  reason?: string;
+}
+
+export interface DecisionReceipt {
+  id: number;
+  blockId: string;
+  verdict: string;
+  decidedAt: string;
+}
+
+/**
+ * Persist an approve/reject verdict to the .NET decision log
+ * (POST /api/decisions). Throws ApiError on failure — the caller decides
+ * whether the local UI state still applies.
+ */
+export async function recordDecision(input: RecordDecisionInput): Promise<DecisionReceipt> {
+  let response: Response;
+  try {
+    response = await fetch("/api/decisions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+  } catch (networkErr) {
+    throw new ApiError(
+      "Could not record the decision — backend unreachable.",
+      null,
+      String(networkErr),
+    );
+  }
+  if (!response.ok) {
+    let detail = "";
+    try {
+      detail = await response.text();
+    } catch {
+      /* ignore */
+    }
+    throw new ApiError(
+      `Decision log returned ${response.status}: ${response.statusText}`,
+      response.status,
+      detail,
+    );
+  }
+  return (await response.json()) as DecisionReceipt;
 }
 
 // ─── Log helpers ─────────────────────────────────────────────────────────────

@@ -1,6 +1,15 @@
 # RailBlockAI Self-Audit Report
-**Generated:** 2026-09-04  
+**Generated:** 2026-09-04
 **Auditor:** AI Agent (Honest Assessment)
+
+> **STATUS UPDATE (2026-09-12) — read this first.** The findings below are
+> **historical**. Since Sept 4: the `HttpClientFactory` bridge bug (§Day 4) is
+> **FIXED** (`AddHttpClient()` registered in `Program.cs`), and the full
+> pipeline is verified live — `POST /api/optimization/generate` returns HTTP 200
+> with real scheduled blocks through .NET → Python → frontend. The replay bundle
+> has grown (10 cases / 14 movements, refreshed dates) and approve/reject
+> verdicts persist via `POST /api/decisions`. Treat the per-task table as
+> history, not current state.
 
 ---
 

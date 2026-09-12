@@ -84,6 +84,8 @@ cd frontend && npm run dev -- --host 127.0.0.1 --port 5173
 | ------ | --- | ------- |
 | POST | `/api/optimization/generate?horizon=daily&days=1` | Run the optimizer on the replay bundle |
 | GET | `/api/optimization/triage?...` | Triage-only rollup + ranked queue |
+| POST | `/api/decisions` | Record an approve/reject verdict (`blockId`, `verdict`; `reason` required on reject) |
+| GET | `/api/decisions` | List recorded verdicts, newest first |
 | GET | `/api/optimization/data` | Raw tasks + corridor windows (optimizer input) |
 | GET | `/api/optimization/current` | Last generated schedule |
 | GET | `/api/railwaydata/*` | Seeded block requests, tasks, defects, windows, sections, trains |

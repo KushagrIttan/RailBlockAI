@@ -1,0 +1,315 @@
+{
+  "replay_context": {
+    "schema_version": "1.0",
+    "data_mode": "replay",
+    "corridor_id": "NDLS-NDB",
+    "corridor_label": "New Delhi to Nizamuddin Junction",
+    "planning_start": "2026-09-14T07:45:00+05:30",
+    "planning_end": "2026-09-14T14:30:00+05:30",
+    "captured_at": "2026-09-14T11:00:00+05:30",
+    "source_system": "public_timetable_snapshot",
+    "source_note": "Saved timetable scenario for a hackathon prototype; not a live railway control feed."
+  },
+  "corridor": {
+    "section_id": "NDLS-NDB-DN",
+    "from_station": {
+      "code": "NDLS",
+      "name": "New Delhi",
+      "latitude": 28.642,
+      "longitude": 77.22
+    },
+    "to_station": {
+      "code": "NDB",
+      "name": "Nizamuddin Junction",
+      "latitude": 28.588,
+      "longitude": 77.253
+    },
+    "length_km": 8.6,
+    "direction": "NDLS_TO_NDB",
+    "geometry_source": "OpenStreetMap-compatible station reference"
+  },
+  "train_movements": [
+    {
+      "id": "svc-64311-20260914-00",
+      "train_number": "64311",
+      "train_name": "New Delhi - Nizamuddin EMU",
+      "train_class": "EMU",
+      "section_id": "NDLS-NDB-DN",
+      "direction": "NDLS_TO_NDB",
+      "scheduled_entry": "2026-09-14T07:55:00+05:30",
+      "scheduled_exit": "2026-09-14T08:12:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:ndls-ndb:64311",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64313-20260914-01",
+      "train_number": "64313",
+      "train_name": "New Delhi - Nizamuddin EMU",
+      "train_class": "EMU",
+      "section_id": "NDLS-NDB-DN",
+      "direction": "NDLS_TO_NDB",
+      "scheduled_entry": "2026-09-14T08:08:00+05:30",
+      "scheduled_exit": "2026-09-14T08:25:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:ndls-ndb:64313",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64315-20260914-02",
+      "train_number": "64315",
+      "train_name": "New Delhi - Nizamuddin EMU",
+      "train_class": "EMU",
+      "section_id": "NDLS-NDB-DN",
+      "direction": "NDLS_TO_NDB",
+      "scheduled_entry": "2026-09-14T08:22:00+05:30",
+      "scheduled_exit": "2026-09-14T08:39:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:ndls-ndb:64315",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64317-20260914-03",
+      "train_number": "64317",
+      "train_name": "New Delhi - Nizamuddin EMU",
+      "train_class": "EMU",
+      "section_id": "NDLS-NDB-DN",
+      "direction": "NDLS_TO_NDB",
+      "scheduled_entry": "2026-09-14T08:36:00+05:30",
+      "scheduled_exit": "2026-09-14T08:53:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:ndls-ndb:64317",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-GDR-8812-20260914-04",
+      "train_number": "GDR-8812",
+      "train_name": "Freight - Anand Vihar",
+      "train_class": "Freight",
+      "section_id": "NDLS-NDB-DN",
+      "direction": "NDLS_TO_NDB",
+      "scheduled_entry": "2026-09-14T08:50:00+05:30",
+      "scheduled_exit": "2026-09-14T09:25:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:ndls-ndb:GDR-8812",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64319-20260914-05",
+      "train_number": "64319",
+      "train_name": "Nizamuddin - New Delhi EMU",
+      "train_class": "EMU",
+      "section_id": "NDLS-NDB-DN",
+      "direction": "NDLS_TO_NDB",
+      "scheduled_entry": "2026-09-14T09:05:00+05:30",
+      "scheduled_exit": "2026-09-14T09:22:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:ndls-ndb:64319",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64321-20260914-06",
+      "train_number": "64321",
+      "train_name": "New Delhi - Nizamuddin EMU",
+      "train_class": "EMU",
+      "section_id": "NDLS-NDB-DN",
+      "direction": "NDLS_TO_NDB",
+      "scheduled_entry": "2026-09-14T09:12:00+05:30",
+      "scheduled_exit": "2026-09-14T09:29:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:ndls-ndb:64321",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64409-20260914-07",
+      "train_number": "64409",
+      "train_name": "New Delhi - Ghaziabad EMU",
+      "train_class": "EMU",
+      "section_id": "NDLS-NDB-DN",
+      "direction": "NDLS_TO_NDB",
+      "scheduled_entry": "2026-09-14T12:05:00+05:30",
+      "scheduled_exit": "2026-09-14T12:22:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:ndls-ndb:64409",
+      "confidence": "third_party"
+    },
+    {
+      "id": "svc-64411-20260914-08",
+      "train_number": "64411",
+      "train_name": "New Delhi - Ghaziabad EMU",
+      "train_class": "EMU",
+      "section_id": "NDLS-NDB-DN",
+      "direction": "NDLS_TO_NDB",
+      "scheduled_entry": "2026-09-14T13:45:00+05:30",
+      "scheduled_exit": "2026-09-14T14:02:00+05:30",
+      "source_system": "public_timetable_snapshot",
+      "source_record_id": "indiarailinfo:ndls-ndb:64411",
+      "confidence": "third_party"
+    }
+  ],
+  "procedure_profiles": [
+    {
+      "id": "track-planned-v1",
+      "traffic_block_required": true,
+      "power_block_required": false,
+      "disconnection_notice_required": false,
+      "permit_to_work_required": false,
+      "minimum_setup_minutes": 15,
+      "minimum_clearance_minutes": 15
+    },
+    {
+      "id": "signal-failure-v1",
+      "traffic_block_required": true,
+      "power_block_required": false,
+      "disconnection_notice_required": true,
+      "permit_to_work_required": false,
+      "minimum_setup_minutes": 10,
+      "minimum_clearance_minutes": 10
+    },
+    {
+      "id": "ohe-emergency-v1",
+      "traffic_block_required": true,
+      "power_block_required": true,
+      "disconnection_notice_required": false,
+      "permit_to_work_required": true,
+      "minimum_setup_minutes": 15,
+      "minimum_clearance_minutes": 15
+    }
+  ],
+  "maintenance_cases": [
+    {
+      "case_id": "CASE-TRACK-001",
+      "scenario_type": "planned_track",
+      "department": "Engineering",
+      "asset_type": "Track",
+      "description": "Track alignment tamping",
+      "section_id": "NDLS-NDB-DN",
+      "location_reference": "KM 0.5-1.2",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 30,
+      "required_resources": [
+        "Tamping machine",
+        "Engineering crew"
+      ],
+      "procedure_profile_id": "track-planned-v1"
+    },
+    {
+      "case_id": "CASE-OHE-001",
+      "scenario_type": "ohe_damage",
+      "department": "Traction Distribution",
+      "asset_type": "OHE",
+      "description": "OHE dropper wire replacement",
+      "section_id": "NDLS-NDB-DN",
+      "location_reference": "KM 2.0",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "urgent",
+      "estimated_work_minutes": 35,
+      "required_resources": [
+        "Overhead electric line crew"
+      ],
+      "procedure_profile_id": "ohe-emergency-v1"
+    },
+    {
+      "case_id": "CASE-SIGNAL-001",
+      "scenario_type": "signal_fault",
+      "department": "Signal & Telecommunication",
+      "asset_type": "Signalling",
+      "description": "Signal relay contact cleaning",
+      "section_id": "NDLS-NDB-DN",
+      "location_reference": "KM 3.4-3.8",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 20,
+      "required_resources": [
+        "Signalling technician"
+      ],
+      "procedure_profile_id": "signal-failure-v1",
+      "recurrence_days": 2
+    },
+    {
+      "case_id": "CASE-TRACK-002",
+      "scenario_type": "track_inspection",
+      "department": "Engineering",
+      "asset_type": "Track",
+      "description": "Rail joint maintenance",
+      "section_id": "NDLS-NDB-DN",
+      "location_reference": "KM 5.1",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "urgent",
+      "estimated_work_minutes": 25,
+      "required_resources": [
+        "Engineering crew"
+      ],
+      "procedure_profile_id": "track-planned-v1"
+    },
+    {
+      "case_id": "CASE-OHE-002",
+      "scenario_type": "planned_ohe",
+      "department": "Traction Distribution",
+      "asset_type": "OHE",
+      "description": "OHE tensioning device inspection",
+      "section_id": "NDLS-NDB-DN",
+      "location_reference": "KM 6.3-6.9",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 30,
+      "required_resources": [
+        "Overhead electric line crew"
+      ],
+      "procedure_profile_id": "ohe-emergency-v1",
+      "recurrence_days": 3
+    },
+    {
+      "case_id": "CASE-SIGNAL-002",
+      "scenario_type": "signal_fault",
+      "department": "Signal & Telecommunication",
+      "asset_type": "Signalling",
+      "description": "Level crossing gate diagnostics",
+      "section_id": "NDLS-NDB-DN",
+      "location_reference": "KM 7.2",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "urgent",
+      "estimated_work_minutes": 25,
+      "required_resources": [
+        "Signalling technician",
+        "Gate crew"
+      ],
+      "procedure_profile_id": "signal-failure-v1"
+    },
+    {
+      "case_id": "CASE-TRACK-003",
+      "scenario_type": "planned_track",
+      "department": "Engineering",
+      "asset_type": "Track",
+      "description": "Ballast cleaning at turnout",
+      "section_id": "NDLS-NDB-DN",
+      "location_reference": "KM 8.1",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 40,
+      "required_resources": [
+        "Ballast cleaner",
+        "Engineering crew"
+      ],
+      "procedure_profile_id": "track-planned-v1"
+    },
+    {
+      "case_id": "CASE-SIGNAL-003",
+      "scenario_type": "planned_signal",
+      "department": "Signal & Telecommunication",
+      "asset_type": "Signalling",
+      "description": "Signal sighting test",
+      "section_id": "NDLS-NDB-DN",
+      "location_reference": "KM 1.8",
+      "reported_at": "2026-09-14T08:00:00+05:30",
+      "urgency": "planned",
+      "estimated_work_minutes": 15,
+      "required_resources": [
+        "Signalling technician"
+      ],
+      "procedure_profile_id": "signal-failure-v1",
+      "recurrence_days": 2
+    }
+  ]
+}

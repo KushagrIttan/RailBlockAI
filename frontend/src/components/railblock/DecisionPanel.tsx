@@ -53,7 +53,7 @@ export function DecisionPanel({
               <span className="text-base font-semibold tracking-tight text-foreground">Maintenance request</span>
               <span
                 className={`rounded px-2 py-0.5 text-[10px] font-semibold uppercase ${
-                  critical ? "bg-red-50 text-destructive" : "bg-amber-50 text-warning"
+                  critical ? "bg-red-50 text-destructive dark:bg-red-950 dark:text-red-300" : "bg-amber-50 text-warning dark:bg-amber-950 dark:text-amber-300"
                 }`}
               >
                 {conflict.severity}
@@ -176,7 +176,7 @@ export function DecisionPanel({
             <Button
               variant="outline"
               onClick={onOverride}
-              className="border-amber-200 text-warning hover:bg-amber-50"
+              className="border-amber-200 text-warning hover:bg-amber-50 dark:border-amber-800 dark:hover:bg-amber-950/50"
             >
               <SlidersHorizontal className="size-4" /> Adjust
             </Button>
