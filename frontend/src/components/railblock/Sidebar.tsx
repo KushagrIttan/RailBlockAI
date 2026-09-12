@@ -1,5 +1,5 @@
 import { Activity, ClipboardCheck, LayoutDashboard, TrainFront } from "lucide-react";
-import type { KpiSnapshot } from "@/lib/railblock/types";
+import type { KpiSnapshot, OptimizationMetrics } from "@/lib/railblock/types";
 
 type NavItem = { label: string; icon: React.ReactNode; active?: boolean; badge?: number };
 
@@ -59,10 +59,12 @@ export function Sidebar({
   kpis,
   onOpenGuide,
   replayContext,
+  metrics,
 }: {
   kpis: KpiSnapshot;
   onOpenGuide: () => void;
   replayContext?: { corridorLabel: string; capturedAt: string } | undefined;
+  metrics?: OptimizationMetrics | null;
 }) {
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-card">
@@ -134,6 +136,53 @@ export function Sidebar({
             />
           </div>
         </div>
+
+        {/* Detailed Metrics from Optimizer */}
+        {metrics && (
+          <div>
+            <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+              Optimizer Metrics
+            </p>
+            <div className="space-y-1.5">
+              <KpiChip
+                label="Scheduled / Total"
+                value={`${metrics.scheduledDemands} / ${metrics.totalDemands}`}
+                tone="default"
+              />
+              <KpiChip
+                label="Deadlines met"
+                value={`${metrics.deadlinesMetPct.toFixed(1)}%`}
+                tone={
+                  metrics.deadlinesMetPct >= 80
+                    ? "success"
+                    : metrics.deadlinesMetPct >= 50
+                    ? "warning"
+                    : "danger"
+                }
+              />
+              <KpiChip
+                label="Weighted deadlines"
+                value={`${metrics.weightedDeadlinesMetPct.toFixed(1)}%`}
+                tone="default"
+              />
+              <KpiChip
+                label="Trains delayed"
+                value={String(metrics.trainsDelayed)}
+                tone={metrics.trainsDelayed > 0 ? "danger" : "success"}
+              />
+              <KpiChip
+                label="Capacity utilization"
+                value={`${metrics.capacityUtilizationPct.toFixed(1)}%`}
+                tone="default"
+              />
+              <KpiChip
+                label="Resource conflicts"
+                value={String(metrics.resourceConflicts)}
+                tone={metrics.resourceConflicts > 0 ? "danger" : "success"}
+              />
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Footer / user */}

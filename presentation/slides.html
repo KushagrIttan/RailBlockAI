@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RailBlock AI — Smart Railway Maintenance Planning</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    /* RailBlockAI Design Tokens (matches frontend) */
+    --bg: #0b0e15;
+    --bg-2: #111624;
+    --panel: #121829;
+    --panel-2: #161c2e;
+    --border: #232c47;
+    --fg: #e8eaf0;
+    --fg-muted: #8f97ad;
+    --primary: #5f8dff;
+    --primary-2: #93b4ff;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --destructive: #f87171;
+    --freight: #7aa8ff;
+    --express: #38bdf8;
+    --suburban: #38bdf8;
+
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+    --radius: 16px;
+    --transition: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    height: 100%;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Deck container (16:9 letterbox) ── */
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+  @media (min-width: 769px) {
+    .deck {
+      max-width: calc(100vh * 16 / 9);
+      max-height: calc(100vw * 9 / 16);
+      margin: auto;
+    }
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 56px 72px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    transform: translateY(12px);
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(95, 141, 255, 0.08), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(52, 211, 153, 0.05), transparent 60%),
+      var(--bg);
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+  /* ── Typography ── */
+  .kicker {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--primary-2);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .kicker::before { content: ""; width: 28px; height: 2px; background: var(--primary); border-radius: 2px; }
+  h1 { font-size: 52px; font-weight: 750; letter-spacing: -0.03em; line-height: 1.08; }
+  h2 { font-size: 38px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+  h3 { font-size: 20px; font-weight: 600; }
+  .subtitle { font-size: 18px; color: var(--fg-muted); line-height: 1.6; margin-top: 16px; max-width: 640px; }
+  .accent { color: var(--primary-2); }
+
+  /* ── Grid & cards ── */
+  .grid { display: grid; gap: 16px; width: 100%; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .card {
+    background: linear-gradient(160deg, var(--panel), var(--panel-2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  }
+  .card:hover { transform: translateY(-4px); border-color: rgba(95,141,255,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  .card .label { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; }
+  .card .value { font-size: 32px; font-weight: 750; letter-spacing: -0.02em; }
+  .card .value.mono { font-family: var(--font-mono); font-size: 26px; }
+  .card .desc { font-size: 13px; color: var(--fg-muted); line-height: 1.5; margin-top: 8px; }
+  .icon-badge { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: rgba(95,141,255,0.12); color: var(--primary-2); margin-bottom: 14px; font-size: 18px; }
+
+  /* ── Timeline / flow ── */
+  .flow { display: flex; align-items: stretch; justify-content: space-between; width: 100%; gap: 12px; margin-top: 28px; }
+  .flow-step { flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; position: relative; }
+  .flow-step .step-num { font-family: var(--font-mono); font-size: 12px; color: var(--primary-2); }
+  .flow-step .step-title { font-weight: 650; margin: 6px 0 6px; font-size: 15px; }
+  .flow-step .step-desc { font-size: 12px; color: var(--fg-muted); line-height: 1.5; }
+  .flow-arrow { display: flex; align-items: center; color: var(--primary); font-size: 18px; }
+
+  /* ── Chart wrappers ── */
+  .chart-wrap { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; }
+  .chart-wrap canvas { width: 100% !important; height: auto !important; }
+
+  /* ── Tabs / chips ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { font-size: 12px; font-weight: 550; padding: 7px 14px; border-radius: 999px; background: rgba(95,141,255,0.10); border: 1px solid rgba(95,141,255,0.25); color: var(--primary-2); }
+
+  /* ── Code block ── */
+  .code { font-family: var(--font-mono); font-size: 13px; line-height: 1.6; background: #0a0f1c; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; color: #c7cddc; overflow-x: auto; white-space: pre; }
+  .code .k { color: #93b4ff; } .code .s { color: #6ee7b7; } .code .c { color: #64748b; }
+
+  /* ── Footer / progress ── */
+  .deck-footer {
+    position: absolute; bottom: 14px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 6px; z-index: 10;
+  }
+  .deck-footer .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: background 0.3s; cursor: pointer; }
+  .deck-footer .dot.active { background: var(--primary); }
+
+  /* ── Terminal window ── */
+  .terminal { background: #0a0f1c; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; font-family: var(--font-mono); font-size: 13px; }
+  .terminal .bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: var(--panel-2); border-bottom: 1px solid var(--border); }
+  .terminal .bar .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .terminal .bar .t-title { margin-left: 8px; font-size: 11px; color: var(--fg-muted); }
+  .terminal .body { padding: 16px 18px; line-height: 1.7; color: #a7b0c5; }
+  .terminal .body .green { color: var(--success); } .terminal .body .blue { color: var(--primary-2); } .terminal .body .dim { color: #64748b; }
+
+  /* ── Gantt mock ── */
+  .gantt { margin-top: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+  .gantt-row { display: flex; align-items: center; gap: 12px; }
+  .gantt-label { width: 90px; color: var(--fg-muted); text-align: right; font-size: 11px; }
+  .gantt-track { flex: 1; height: 22px; background: rgba(255,255,255,0.03); border-radius: 4px; position: relative; }
+  .gantt-block { position: absolute; top: 0; bottom: 0; border-radius: 4px; display: flex; align-items: center; padding: 0 8px; font-size: 10px; font-weight: 600; color: #0b0e15; }
+  .gantt-block.green { background: var(--success); } .gantt-block.blue { background: var(--primary); }
+  .gantt-block.red { background: var(--destructive); color: #fff; } .gantt-block.amber { background: var(--warning); }
+
+  /* ── Roadmap rows ── */
+  .roadmap { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; width: 100%; }
+  .roadmap-item { display: flex; align-items: flex-start; gap: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; }
+  .roadmap-phase { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--primary-2); min-width: 72px; padding-top: 2px; }
+  .roadmap-body h4 { font-size: 15px; font-weight: 650; margin-bottom: 4px; }
+  .roadmap-body p { font-size: 13px; color: var(--fg-muted); line-height: 1.55; }
+
+  /* ── Statistics strip ── */
+  .stat-strip { display: flex; gap: 24px; margin-top: 28px; width: 100%; }
+  .stat { flex: 1; text-align: center; padding: 20px 12px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); }
+  .stat .num { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; font-family: var(--font-mono); }
+  .stat .lbl { font-size: 12px; color: var(--fg-muted); margin-top: 6px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* ── Split layout ── */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; width: 100%; }
+  .split-left h2 { margin-bottom: 12px; }
+  .split-left p { color: var(--fg-muted); font-size: 15px; line-height: 1.65; margin-top: 10px; }
+
+  .pill { display:inline-block; padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight:600; letter-spacing: 0.05em; }
+  .pill-green { background: rgba(52,211,153,0.12); color: var(--success); }
+  .pill-blue { background: rgba(95,141,255,0.12); color: var(--primary-2); }
+  .pill-amber { background: rgba(251,191,36,0.12); color: var(--warning); }
+  .pill-red { background: rgba(248,113,113,0.12); color: var(--destructive); }
+
+  .muted { color: var(--fg-muted); }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .mt-24 { margin-top: 24px; } .mt-16 { margin-top: 16px; } .mt-8 { margin-top: 8px; }
+  .mb-8 { margin-bottom: 8px; } .mb-16 { margin-bottom: 16px; }
+
+  /* Keyboard nav hint */
+  .nav-hint { position: absolute; top: 18px; right: 24px; font-size: 11px; color: rgba(143,151,173,0.5); letter-spacing: 0.08em; z-index: 20; user-select: none; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <div class="nav-hint">→ / ← arrows · scroll · click dots</div>
+
+  <!-- ═══════════ SLIDE 1 — TITLE ═══════════ -->
+  <section class="slide active" data-slide="0">
+    <div class="kicker">Smart India Hackathon 2026 · Railways</div>
+    <h1>Rail<span class="accent">Block</span> AI</h1>
+    <p class="subtitle">Intelligent maintenance-block planning on live corridors — packing track work into safe timetable gaps with ML prioritization, shadow-block safety, and human-in-the-loop approval.</p>
+    <div class="grid grid-4 mt-24" style="max-width: 820px;">
+      <div class="stat" style="padding: 14px 8px;"><div class="num" style="font-size: 26px;" data-count="28">28</div><div class="lbl">15-min slots</div></div>
+      <div class="stat" style="padding: 14px 8px;"><div class="num" style="font-size: 26px;">2</div><div class="lbl">corridors</div></div>
+      <div class="stat" style="padding: 14px 8px;"><div class="num" style="font-size: 26px;">10</div><div class="lbl">maintenance cases</div></div>
+      <div class="stat" style="padding: 14px 8px;"><div class="num" style="font-size: 26px;">14</div><div class="lbl">trains / day</div></div>
+    </div>
+    <div class="chips mt-24">
+      <span class="chip">ML Prioritization</span>
+      <span class="chip">Greedy Scheduling</span>
+      <span class="chip">Shadow-Block Safety</span>
+      <span class="chip">Human-in-the-loop</span>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 2 — PROBLEM ═══════════ -->
+  <section class="slide" data-slide="1">
+    <div class="kicker">The Problem</div>
+    <h2 style="max-width: 800px;">Railway track maintenance is planned manually, and the gaps are brutal to find.</h2>
+    <div class="grid grid-3 mt-24">
+      <div class="card">
+        <div class="icon-badge">🚧</div>
+        <div class="label">Finding windows</div>
+        <div class="desc">Planners manually scan timetables for gaps long enough to safely close a line — an error-prone, hours-long process.</div>
+      </div>
+      <div class="card">
+        <div class="icon-badge">⚠️</div>
+        <div class="label">Shadow blocks</div>
+        <div class="desc">Closing a section forces adjacent trains to be re-routed or held — knock-on effects called shadow blocks.</div>
+      </div>
+      <div class="card">
+        <div class="icon-badge">🧠</div>
+        <div class="label">No prioritization</div>
+        <div class="desc">Which maintenance job matters most under a deadline? Today's process doesn't rank by risk or impact.</div>
+      </div>
+    </div>
+    <div class="terminal mt-24" style="max-width: 560px;">
+      <div class="bar"><span class="t-dot" style="background:#f87171"></span><span class="t-dot" style="background:#fbbf24"></span><span class="t-dot" style="background:#34d399"></span><span class="t-title">planner@control · 08:00 batch</span></div>
+      <div class="body">
+        <span class="dim"># today's manual gap search on DLI-GZB</span><br>
+        <span class="blue">finder</span> gaps --section DLI-GZB-DN --min 45min<br>
+        <span class="green">✔ 1 gap found</span> <span class="dim">09:28–13:27 (239 min)</span><br>
+        <span class="blue">replanner</span> insert CASE-TRACK-001<br>
+        <span class="red">✘ conflicts with 3 services</span> — shadow blocks<br>
+        <span class="dim"># …repeat for every case, every day.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 3 — SOLUTION ═══════════ -->
+  <section class="slide" data-slide="2">
+    <div class="kicker">Our Solution</div>
+    <h2>One pipeline: timetable → gaps → <span class="accent">ML-ranked schedule</span> → human sign-off.</h2>
+    <div class="flow mt-24">
+      <div class="flow-step"><div class="step-num">01</div><div class="step-title">Frozen timetable</div><div class="step-desc">Public schedule snapshot per corridor (DLI-GZB, NDLS-NDB) with train classes and headways.</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="step-num">02</div><div class="step-title">Gap detection</div><div class="step-desc">Merge occupied stretches per line, add safety headway, derive usable possession windows.</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="step-num">03</div><div class="step-title">ML ranking</div><div class="step-desc">Calibrated model scores each maintenance case by urgency, risk, and resource profile.</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="step-num">04</div><div class="step-title">Best-fit placement</div><div class="step-desc">Greedy scheduling with rescue-swap backtracking, resource capacity, shadow-block detection.</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="step-num">05</div><div class="step-title">Human approval</div><div class="step-desc">Judge approves or rejects each block; verdicts persist to a decision log.</div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 4 — ARCHITECTURE ═══════════ -->
+  <section class="slide" data-slide="3">
+    <div class="kicker">Architecture</div>
+    <h2>Three-tier, fully decoupled.</h2>
+    <div class="split mt-24">
+      <div>
+        <div class="grid grid-3" style="gap: 12px;">
+          <div class="card" style="padding: 18px;">
+            <div class="icon-badge" style="font-size: 15px;">🖥️</div>
+            <div class="label">Frontend</div>
+            <div class="desc" style="font-size: 12px;">React + Vite + Tailwind + Recharts. Corridor switcher, Gantt, ML panel, dark mode.</div>
+          </div>
+          <div class="card" style="padding: 18px;">
+            <div class="icon-badge" style="font-size: 15px;">🔌</div>
+            <div class="label">.NET API</div>
+            <div class="desc" style="font-size: 12px;">ASP.NET Core · controller layer · decision log · replay bundle loader.</div>
+          </div>
+          <div class="card" style="padding: 18px;">
+            <div class="icon-badge" style="font-size: 15px;">🧠</div>
+            <div class="label">Python Engine</div>
+            <div class="desc" style="font-size: 12px;">FastAPI optimizer (ML scoring, scheduling, rescue, shadow blocks) · port 8000.</div>
+          </div>
+        </div>
+        <div class="terminal mt-16">
+          <div class="bar"><span class="t-dot" style="background:#34d399"></span><span class="t-dot" style="background:#38bdf8"></span><span class="t-dot" style="background:#fbbf24"></span><span class="t-title">start-demo.bat</span></div>
+          <div class="body">
+            <span class="green">[OK]</span> optimizer is up (http://127.0.0.1:8000/health)<br>
+            <span class="green">[OK]</span> .NET API is up (http://localhost:5053/api/optimization/data)<br>
+            <span class="green">[OK]</span> frontend is up (http://127.0.0.1:5173/)<br>
+            <span class="dim"># three services, one command, full stack live</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 class="mb-8">Request flow</h3>
+        <div class="code"><span class="c"># frontend → .NET → Python → schedule</span>
+<span class="k">POST</span> /api/optimization/generate?corridorId=DLI-GZB
+  <span class="k">→ POST</span> :8000/replay/optimize <span class="c"># engine</span>
+      <span class="k">ml_scores</span> = <span class="s">_score_replay_cases</span>(cases)
+      <span class="k">gaps</span>     = <span class="s">_derive_replay_gaps</span>(request)
+      <span class="k">schedule</span> = <span class="s">_place_day</span>(ordered, gaps)
+<span class="k">✔ 200</span> { schedule, kpis, mlStats }</div>
+        <div class="chips mt-16">
+          <span class="chip">port 5173 · Vite</span>
+          <span class="chip">port 5053 · ASP.NET</span>
+          <span class="chip">port 8000 · FastAPI</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 5 — ML ENGINE ═══════════ -->
+  <section class="slide" data-slide="4">
+    <div class="kicker">The Engine</div>
+    <h2>ML prioritization that drives the schedule.</h2>
+    <div class="split mt-24">
+      <div>
+        <div class="card" style="margin-bottom: 14px;">
+          <div class="flex-between"><span class="label" style="margin:0;">Case ranker</span><span class="pill pill-blue">calibrated [0,1]</span></div>
+          <div class="mt-8 grid grid-2" style="gap: 10px;">
+            <div><div class="label">Features</div><div class="desc">urgency · asset_type · section risk · resources · recurrence</div></div>
+            <div><div class="label">Output</div><div class="desc">per-case score → day ordering → placement priority</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="flex-between"><span class="label" style="margin:0;">Scheduler</span><span class="pill pill-green">greedy + rescue</span></div>
+          <div class="mt-8 desc">Best-fit into widest-margin gap · rescue-swap backtracking frees slots · resource capacity enforced per slot · cross-day recurrence (weekly / monthly horizons).</div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <div class="flex-between mb-8"><h3>Priority distribution</h3><span class="pill pill-blue">ML scores</span></div>
+        <canvas id="mlChart" height="220"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 6 — LIVE DEMO (Gantt narrative) ═══════════ -->
+  <section class="slide" data-slide="5">
+    <div class="kicker">Live Demo · DLI → GZB</div>
+    <h2>The problem <span style="color: var(--fg-muted); font-weight: 400;">→</span> the solution, on one Gantt.</h2>
+    <div class="mt-24">
+      <div class="gantt">
+        <div class="gantt-row">
+          <div class="gantt-label">Kasia</div>
+          <div class="gantt-track">
+            <div class="gantt-block red" style="width:9%; left:5%;">✗ conflict</div>
+            <div class="gantt-block green" style="width:9%; left:14%;">SIG-002 09:38</div>
+            <div class="gantt-block green" style="width:10%; left:23%;">OHE-001 10:33</div>
+            <div class="gantt-block blue" style="width:8%; left:33%;">TRK-003</div>
+            <div class="gantt-block amber" style="width:7%; left:41%;">deferred</div>
+          </div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Memu</div>
+          <div class="gantt-track">
+            <div class="gantt-block" style="width:4%; left:20%; background: var(--express);">64152</div>
+            <div class="gantt-block" style="width:4%; left:24%; background: var(--express);">64414</div>
+            <div class="gantt-block" style="width:4%; left:28%; background: var(--express);">54055</div>
+          </div>
+        </div>
+        <div class="gantt-row">
+          <div class="gantt-label">Express</div>
+          <div class="gantt-track">
+            <div class="gantt-block" style="width:4%; left:18%; background: var(--freight);">14511</div>
+            <div class="gantt-block" style="width:4%; left:34%; background: var(--freight);">14521</div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-3 mt-24">
+        <div class="card"><div class="label">Before</div><div class="desc">Signal fault + OHE burn untacked, occupying the same contested morning gap.</div></div>
+        <div class="card"><div class="label">After optimizer</div><div class="desc">Best-fit placement resolves 2, defers the rest into later windows — zero collision.</div></div>
+        <div class="card"><div class="label">Your action</div><div class="desc">Approve / reject each block. Verdict is persisted to <span class="mono" style="font-family:var(--font-mono);">POST /api/decisions</span>.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 7 — MULTI-CORRIDOR ═══════════ -->
+  <section class="slide" data-slide="6">
+    <div class="kicker">Generalization</div>
+    <h2>Not hardcoded to one corridor.</h2>
+    <p class="subtitle">The same engine, trained on the same features, schedules two very different corridors — proving the architecture generalizes.</p>
+    <div class="grid grid-2 mt-24">
+      <div class="card">
+        <div class="flex-between"><h3>DLI → GZB</h3><span class="pill pill-blue">suburban freight mix</span></div>
+        <div class="mt-16">
+          <div><span class="muted">Window</span> <span class="mono" style="font-family:var(--font-mono);">08:00–15:00</span></div>
+          <div class="mt-8"><span class="muted">Trains</span> <span class="mono" style="font-family:var(--font-mono);">14 services</span></div>
+          <div class="mt-8"><span class="muted">Cases</span> <span class="mono" style="font-family:var(--font-mono);">10</span></div>
+          <div class="mt-8"><span class="muted">Scheduled</span> <span class="mono" style="font-family:var(--font-mono);">4</span> <span class="muted">(peaks pack the rest)</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="flex-between"><h3>NDLS → NDB</h3><span class="pill pill-amber">EMU shuttle</span></div>
+        <div class="mt-16">
+          <div><span class="muted">Window</span> <span class="mono" style="font-family:var(--font-mono);">07:45–14:30</span></div>
+          <div class="mt-8"><span class="muted">Trains</span> <span class="mono" style="font-family:var(--font-mono);">9 services</span></div>
+          <div class="mt-8"><span class="muted">Cases</span> <span class="mono" style="font-family:var(--font-mono);">8</span></div>
+          <div class="mt-8"><span class="muted">Scheduled</span> <span class="mono" style="font-family:var(--font-mono);">3</span> <span class="muted">(freight gap fits OHE)</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="chips mt-24">
+      <span class="chip">1 schema</span>
+      <span class="chip">2 bundles</span>
+      <span class="chip">same engine</span>
+      <span class="chip">corridorId query param</span>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 8 — KPIs / IMPACT ═══════════ -->
+  <section class="slide" data-slide="7">
+    <div class="kicker">Impact</div>
+    <h2>Quantified, not vibes.</h2>
+    <div class="grid grid-2 mt-24" style="gap: 20px;">
+      <div class="chart-wrap">
+        <div class="flex-between mb-8"><h3>Throughput vs demand</h3><span class="pill pill-green">daily</span></div>
+        <canvas id="throughputChart" height="180"></canvas>
+      </div>
+      <div class="chart-wrap">
+        <div class="flex-between mb-8"><h3>Weekly horizon</h3><span class="pill pill-blue">recurrence spread</span></div>
+        <canvas id="weeklyChart" height="180"></canvas>
+      </div>
+    </div>
+    <div class="stat-strip mt-24">
+      <div class="stat"><div class="num">~96%</div><div class="lbl">gap utilization</div></div>
+      <div class="stat"><div class="num">4→28</div><div class="lbl">blocks daily → weekly</div></div>
+      <div class="stat"><div class="num">2</div><div class="lbl">corridors live</div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 9 — DATA / INTEGRITY ═══════════ -->
+  <section class="slide" data-slide="8">
+    <div class="kicker">Data &amp; Integrity</div>
+    <h2>Honest about what's real, ready for what's next.</h2>
+    <div class="grid grid-2 mt-24">
+      <div class="card">
+        <div class="flex-between"><span class="label" style="margin:0;">Now</span><span class="pill pill-amber">prototype</span></div>
+        <ul style="list-style:none; margin-top:14px; font-size:13px; color:var(--fg-muted); line-height:2;">
+          <li>✔ Synthetic CRIS-style replay bundles (2 corridors)</li>
+          <li>✔ Public timetable snapshot + procedure profiles</li>
+          <li>✔ Every run reproducible via <span class="mono" style="font-family:var(--font-mono);">build_bundle.py</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="flex-between"><span class="label" style="margin:0;">Next</span><span class="pill pill-green">production path</span></div>
+        <ul style="list-style:none; margin-top:14px; font-size:13px; color:var(--fg-muted); line-height:2;">
+          <li>→ Live CRIS / IRIMS feeds (real-time timetable + defect cases)</li>
+          <li>→ Double-line &amp; multi-section possession modeling</li>
+          <li>→ OAuth + role-based planner access, audit trail</li>
+        </ul>
+      </div>
+    </div>
+    <div class="terminal mt-24" style="max-width: 620px;">
+      <div class="bar"><span class="t-dot" style="background:#f87171"></span><span class="t-dot" style="background:#fbbf24"></span><span class="t-dot" style="background:#34d399"></span><span class="t-title">data/replay/</span></div>
+      <div class="body">
+        <span class="blue">dli-gzb/replay_bundle.json</span> <span class="dim"># 10 cases · 14 trains</span><br>
+        <span class="blue">ndls-ndb/replay_bundle.json</span> <span class="dim"># 8 cases · 9 trains</span><br>
+        <span class="green">✔ source_note:</span> <span class="dim">"Saved timetable scenario for a hackathon prototype; not a live railway control feed."</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 10 — ROADMAP ═══════════ -->
+  <section class="slide" data-slide="9">
+    <div class="kicker">Roadmap</div>
+    <h2>From prototype to production stack.</h2>
+    <div class="roadmap mt-24">
+      <div class="roadmap-item">
+        <div class="roadmap-phase">NOW</div>
+        <div class="roadmap-body"><h4>SIH demo</h4><p>Frozen replay bundles, multi-corridor, decision log, dark-mode dashboard. One command to run: <span class="mono" style="font-family:var(--font-mono);">start-demo.bat</span>.</p></div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-phase">NEXT</div>
+        <div class="roadmap-body"><h4>Live data</h4><p>Wire CRIS / IRIMS real-time feeds; streaming updates; alerting on new defect cases.</p></div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-phase">LATER</div>
+        <div class="roadmap-body"><h4>Network scale</h4><p>Multi-section possession chains, crew &amp; machine routing, outage-aware rerouting, full audit &amp; compliance reporting.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SLIDE 11 — THANK YOU / CTA ═══════════ -->
+  <section class="slide" data-slide="10">
+    <div class="kicker">Thank you</div>
+    <h1>Questions?</h1>
+    <p class="subtitle" style="max-width: 560px;">RailBlock AI — the optimizer that finds the safe hours, so railway planners can close the line with confidence.</p>
+    <div class="chips mt-24">
+      <span class="chip">React · Vite · Tailwind</span>
+      <span class="chip">ASP.NET Core</span>
+      <span class="chip">FastAPI · Python</span>
+      <span class="chip">scikit-learn (ML)</span>
+    </div>
+  </section>
+
+  <!-- Footer progress dots -->
+  <div class="deck-footer" id="dots"></div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsBox = document.getElementById('dots');
+  let current = 0;
+
+  // build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => go(i));
+    dotsBox.appendChild(d);
+  });
+  const dots = dotsBox.children;
+
+  function go(i) {
+    current = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+    [...dots].forEach((d, idx) => d.classList.toggle('active', idx === current));
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') go(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(current - 1);
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End') go(slides.length - 1);
+  });
+  document.addEventListener('wheel', (e) => {
+    if (e.deltaY > 30) go(current + 1);
+    else if (e.deltaY < -30) go(current - 1);
+  });
+
+  // ── Charts ──
+  const CHART_BORDER = 'rgba(35,44,71,0.6)';
+  const gridColor = 'rgba(143,151,173,0.12)';
+  const tickColor = '#8f97ad';
+
+  // ML priority distribution
+  new Chart(document.getElementById('mlChart'), {
+    type: 'bar',
+    data: {
+      labels: ['emergency', 'urgent', 'planned'],
+      datasets: [{
+        label: 'ML score',
+        data: [0.93, 0.78, 0.52],
+        backgroundColor: ['rgba(248,113,113,0.6)', 'rgba(251,191,36,0.6)', 'rgba(95,141,255,0.6)'],
+        borderColor: ['#f87171', '#fbbf24', '#5f8dff'],
+        borderWidth: 1.5,
+        borderRadius: 8,
+        maxBarThickness: 56,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, max: 1, grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { color: tickColor, font: { size: 12 } } }
+      }
+    }
+  });
+
+  // Throughput vs demand (daily)
+  new Chart(document.getElementById('throughputChart'), {
+    type: 'bar',
+    data: {
+      labels: ['01', '02', '03', '04', '05', '06', '07'],
+      datasets: [
+        { label: 'Scheduled', data: [2, 3, 2, 4, 2, 3, 2], backgroundColor: 'rgba(52,211,153,0.75)', borderRadius: 6 },
+        { label: 'Deferred', data: [6, 5, 6, 4, 6, 5, 6], backgroundColor: 'rgba(251,191,36,0.45)', borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: tickColor, font: { size: 11 } } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: tickColor } },
+        y: { grid: { color: gridColor }, ticks: { color: tickColor } }
+      }
+    }
+  });
+
+  // Weekly horizon recurrence
+  new Chart(document.getElementById('weeklyChart'), {
+    type: 'bar',
+    data: {
+      labels: ['W1', 'W2', 'W3', 'W4'],
+      datasets: [
+        { label: 'Scheduled', data: [7, 8, 7, 6], backgroundColor: 'rgba(95,141,255,0.75)', borderRadius: 6 },
+        { label: 'Deferred', data: [1, 3, 2, 2], backgroundColor: 'rgba(248,113,113,0.5)', borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: tickColor, font: { size: 11 } } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: tickColor } },
+        y: { grid: { color: gridColor }, ticks: { color: tickColor } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

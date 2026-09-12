@@ -236,36 +236,38 @@ export function TrackView({
                   }
 
                   // ── Active (unresolved) block ────────────────────────────────
-                  let styleClass = "";
-                  let icon = <AlertTriangle className="size-2.5 shrink-0" />;
-                  let statusTag = "";
+                                    let styleClass = "";
+                                    let icon = <AlertTriangle className="size-2.5 shrink-0" />;
+                                    let statusTag = "";
+                                    let pulseClass = "";
 
-                  if (sb.status === "scheduled") {
-                    styleClass = isSelected
-                      ? "border-green-600 bg-green-200 text-green-900 ring-2 ring-green-600 shadow-md z-25"
-                      : "border-green-400 bg-green-100 text-green-800 hover:border-green-500";
-                    icon = <CheckCircle2 className="size-3 shrink-0 text-green-700" />;
-                    statusTag = "✅ Approved Window";
-                  } else if (sb.status === "blocked") {
-                    styleClass = isSelected
-                      ? "border-2 border-dashed border-red-600 bg-red-200 text-red-950 ring-2 ring-red-500 shadow-md z-25"
-                      : "border border-dashed border-red-400 bg-red-100 text-red-800 hover:border-red-500";
-                    icon = <AlertOctagon className="size-3 shrink-0 text-red-600" />;
-                    statusTag = "❌ Blocked by EMU";
-                  } else {
-                    styleClass = isSelected
-                      ? "border-2 border-dashed border-amber-600 bg-amber-200 text-amber-950 ring-2 ring-amber-500 shadow-md z-25"
-                      : "border border-dashed border-amber-400 bg-amber-100 text-amber-900 hover:border-amber-500";
-                    icon = <Clock3 className="size-3 shrink-0 text-amber-600" />;
-                    statusTag = "⏳ Deferred (60m)";
-                  }
+                                    if (sb.status === "scheduled") {
+                                      styleClass = isSelected
+                                        ? "border-green-600 bg-green-200 text-green-900 ring-2 ring-green-600 shadow-md z-25"
+                                        : "border-green-400 bg-green-100 text-green-800 hover:border-green-500";
+                                      icon = <CheckCircle2 className="size-3 shrink-0 text-green-700" />;
+                                      statusTag = "✅ Approved Window";
+                                    } else if (sb.status === "blocked") {
+                                      styleClass = isSelected
+                                        ? "border-2 border-dashed border-red-600 bg-red-200 text-red-950 ring-2 ring-red-500 shadow-md z-25"
+                                        : "border border-dashed border-red-400 bg-red-100 text-red-800 hover:border-red-500";
+                                      icon = <AlertOctagon className="size-3 shrink-0 text-red-600" />;
+                                      statusTag = "❌ Blocked by Peak Traffic";
+                                      pulseClass = "animate-pulse";
+                                    } else {
+                                      styleClass = isSelected
+                                        ? "border-2 border-dashed border-amber-600 bg-amber-200 text-amber-950 ring-2 ring-amber-500 shadow-md z-25"
+                                        : "border border-dashed border-amber-400 bg-amber-100 text-amber-900 hover:border-amber-500";
+                                      icon = <Clock3 className="size-3 shrink-0 text-amber-600" />;
+                                      statusTag = "⏳ Deferred (Needs Longer Gap)";
+                                    }
 
-                  return (
-                    <button
-                      key={sb.id}
-                      onClick={() => onSelectConflict?.(sb.conflictId)}
-                      title={`${sb.label} · ${sb.conflictReason ?? ""}`}
-                      className={`absolute top-2 z-20 flex h-9.5 items-center gap-1.5 overflow-hidden rounded-md px-2 text-left text-[10px] font-semibold transition-all cursor-pointer ${styleClass}`}
+                                    return (
+                                      <button
+                                        key={sb.id}
+                                        onClick={() => onSelectConflict?.(sb.conflictId)}
+                                        title={`${sb.label} · ${sb.conflictReason ?? ""}`}
+                                        className={`absolute top-2 z-20 flex h-9.5 items-center gap-1.5 overflow-hidden rounded-md px-2 text-left text-[10px] font-semibold transition-all cursor-pointer ${styleClass} ${pulseClass}`}
                       style={{
                         left: `${(sb.startSlot / SLOT_COUNT) * 100}%`,
                         width: `${(sb.span / SLOT_COUNT) * 100}%`,

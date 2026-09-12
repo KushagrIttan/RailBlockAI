@@ -1,11 +1,13 @@
 import type {
-  BackendReplayOptimizationResult,
+  BackendOptimizationResult,
   BackendScheduledBlock,
   Conflict,
   Corridor,
   LogEntry,
   OptimizationSchedule,
   PlanningHorizon,
+  ReplayTrainMovement,
+  ReplayWindowCandidate,
   ShadowBlock,
 } from "./types";
 import { ApiError } from "./types";
@@ -211,16 +213,16 @@ export async function fetchOptimizationSchedule(
     );
   }
 
-  let apiResult: BackendReplayOptimizationResult;
-  try {
-    apiResult = (await response.json()) as BackendReplayOptimizationResult;
-  } catch (parseErr) {
-    throw new ApiError(
-      "Received a response from the backend but could not parse it as JSON.",
-      response.status,
-      String(parseErr),
-    );
-  }
+  let apiResult: BackendOptimizationResult;
+    try {
+      apiResult = (await response.json()) as BackendOptimizationResult;
+    } catch (parseErr) {
+      throw new ApiError(
+        "Received a response from the backend but could not parse it as JSON.",
+        response.status,
+        String(parseErr),
+      );
+    }
 
   if (!apiResult.replayContext || apiResult.mode !== "replay") {
     throw new ApiError(
@@ -234,59 +236,63 @@ export async function fetchOptimizationSchedule(
 
   const schedule = apiResult.schedule ?? [];
 
-  const shadowBlocks: ShadowBlock[] = schedule.map((b, i) => blockToShadowBlock(b, i));
+  const shadowBlocks: ShadowBlock[] = schedule.map((b: BackendScheduledBlock, i: number) => blockToShadowBlock(b, i));
 
-  const conflicts: Conflict[] = schedule.map(blockToConflict);
+    const conflicts: Conflict[] = schedule.map((b: BackendScheduledBlock) => blockToConflict(b));
 
   const planningStart = new Date(apiResult.replayContext.planningStart).getTime();
-  const trains = apiResult.trainMovements.map((movement) => {
-    const start = new Date(movement.scheduledEntry).getTime();
-    const end = new Date(movement.scheduledExit).getTime();
-    const sourceClass = movement.trainClass.toLowerCase();
+  const trains = apiResult.trainMovements.map((movement: ReplayTrainMovement) => {
+      const start = new Date(movement.scheduledEntry).getTime();
+      const end = new Date(movement.scheduledExit).getTime();
+      const sourceClass = movement.trainClass.toLowerCase();
+      return {
+        id: movement.id,
+        number: movement.number,
+        name: movement.name,
+        trainClass: sourceClass.includes("express") ? "express" as const : "suburban" as const,
+        priority: sourceClass.includes("express") ? 2 : 1,
+        status: "on-time" as const,
+        delayMinutes: 0,
+        startSlot: Math.max(0, Math.floor((start - planningStart) / 900000)),
+        span: Math.max(1, Math.ceil((end - start) / 900000)),
+        sector: movement.sectionId,
+        speedKph: 0,
+      };
+    });
+
+    const planningEnd = new Date(apiResult.replayContext.planningEnd).getTime();
+      const horizonMinutes = Math.max(1, (planningEnd - planningStart) / 60000);
+      const usableMinutes = apiResult.windowCandidates.reduce((sum: number, window: ReplayWindowCandidate) => sum + window.usableMinutes, 0);
+      const throughputPct = Math.round((usableMinutes / horizonMinutes) * 1000) / 10;
+
+    // Extract detailed metrics from the backend response
+    const metrics = apiResult.metrics ?? null;
+
     return {
-      id: movement.id,
-      number: movement.number,
-      name: movement.name,
-      trainClass: sourceClass.includes("express") ? "express" as const : "suburban" as const,
-      priority: sourceClass.includes("express") ? 2 : 1,
-      status: "on-time" as const,
-      delayMinutes: 0,
-      startSlot: Math.max(0, Math.floor((start - planningStart) / 900000)),
-      span: Math.max(1, Math.ceil((end - start) / 900000)),
-      sector: movement.sectionId,
-      speedKph: 0,
+      engine: "Timetable Replay Planner",
+      version: "Replay V1",
+      generatedAt: new Date().toISOString(),
+      corridor: corridorId,
+      kpis: {
+        trainsMonitored: apiResult.totalTasks,
+        activeConflicts: conflicts.length,
+        avgDelaySavedMinutes: 0,
+        throughputEfficiencyPct: throughputPct,
+      },
+      trains,
+      shadowBlocks,
+      conflicts,
+      recommendations: apiResult.recommendations ?? [],
+      replayContext: apiResult.replayContext,
+      horizon: apiResult.horizon,
+      planningDays: apiResult.planningDays,
+      dayBreakdown: apiResult.dayBreakdown ?? [],
+      blocks: schedule,
+      mlStats: apiResult.mlStats ?? null,
+      triage: apiResult.triage ?? null,
+      metrics,
     };
-  });
-
-  const planningEnd = new Date(apiResult.replayContext.planningEnd).getTime();
-  const horizonMinutes = Math.max(1, (planningEnd - planningStart) / 60000);
-  const usableMinutes = apiResult.windowCandidates.reduce((sum, window) => sum + window.usableMinutes, 0);
-  const throughputPct = Math.round((usableMinutes / horizonMinutes) * 1000) / 10;
-
-  return {
-    engine: "Timetable Replay Planner",
-    version: "Replay V1",
-    generatedAt: new Date().toISOString(),
-    corridor: corridorId,
-    kpis: {
-      trainsMonitored: apiResult.totalTasks,
-      activeConflicts: conflicts.length,
-      avgDelaySavedMinutes: 0,
-      throughputEfficiencyPct: throughputPct,
-    },
-    trains,
-    shadowBlocks,
-    conflicts,
-    recommendations: apiResult.recommendations ?? [],
-    replayContext: apiResult.replayContext,
-    horizon: apiResult.horizon,
-    planningDays: apiResult.planningDays,
-    dayBreakdown: apiResult.dayBreakdown ?? [],
-    blocks: schedule,
-    mlStats: apiResult.mlStats ?? null,
-    triage: apiResult.triage ?? null,
-  };
-}
+  }
 
 // ─── Decision recording ──────────────────────────────────────────────────────
 

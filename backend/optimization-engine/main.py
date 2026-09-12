@@ -661,6 +661,11 @@ SECTION_RISK_WEIGHT = 0.15
 SECTION_RISK_CAP = 2.0
 DEFERRAL_BOOST = 0.05
 
+# The trained/calibrated ML score is the primary scheduling decision. Cross-day
+# state can refine a tie but must never overwhelm the learned case ranking.
+ML_SCORE_WEIGHT = 1.0
+SECTION_RISK_TIE_BREAK_WEIGHT = 0.10
+
 
 def _resource_units(cases: List[MaintenanceCase],
                     catalog: Optional[List[ResourceInventoryItem]]) -> Dict[str, int]:
@@ -684,13 +689,24 @@ def _case_due(case: MaintenanceCase, day_index: int) -> bool:
 
 def _day_order_key(case: MaintenanceCase, ml_scores: dict,
                    sections_risk: Dict[str, float], deferred_prev: set) -> tuple:
-    """Ordering for one day: calibrated ML score, plus a cross-day carry-over that
-    (a) keeps pushing a section that was worked or blocked recently, and (b) boosts
-    a case that was deferred the previous day."""
-    ml = ml_scores.get(case.case_id, 0.0)
-    carry = min(sections_risk.get(case.section_id, 0.0), 0.5)
-    boost = DEFERRAL_BOOST if case.case_id in deferred_prev else 0.0
-    return (-(ml + carry + boost), _replay_priority(case))
+    """Return an ML-first scheduling order key.
+
+    `ml_scores` is the calibrated model output and therefore controls placement
+    order. Operational state only breaks close ML ties: a previously deferred
+    case is considered first at the same score, then section carry-over risk,
+    then the deterministic urgency bucket/case ID. This keeps replay scheduling
+    explainable without silently falling back to hand-written urgency rules.
+    """
+    ml_score = float(ml_scores.get(case.case_id, 0.0))
+    carry_over = min(sections_risk.get(case.section_id, 0.0), 0.5)
+    was_deferred = case.case_id in deferred_prev
+    return (
+        -(ml_score * ML_SCORE_WEIGHT),
+        -int(was_deferred),
+        -(carry_over * SECTION_RISK_TIE_BREAK_WEIGHT),
+        _replay_priority(case),
+        case.case_id,
+    )
 
 
 def _place_day(

@@ -33,12 +33,22 @@ export interface BackendScheduledBlock {
 }
 
 export interface BackendOptimizationResult {
+  mode: "replay";
+  horizon: PlanningHorizon;
+  planningDays: number;
+  replayContext: ReplayContext;
+  trainMovements: ReplayTrainMovement[];
+  windowCandidates: ReplayWindowCandidate[];
   totalTasks: number;
   scheduledTasks: number;
-  shadowBlocks: number;
   conflictsDetected: number;
   assetAvailabilityGain: number;
   schedule: BackendScheduledBlock[];
+  recommendations: ScheduleRecommendation[];
+  dayBreakdown: DayBreakdown[];
+  mlStats?: MlStats;
+  triage?: TriageQueue;
+  metrics?: OptimizationMetrics;
 }
 
 export interface ReplayContext {
@@ -140,22 +150,14 @@ export interface TriageQueue {
   items: TriageItem[];
 }
 
-export interface BackendReplayOptimizationResult {
-  mode: "replay";
-  horizon: PlanningHorizon;
-  planningDays: number;
-  replayContext: ReplayContext;
-  trainMovements: ReplayTrainMovement[];
-  windowCandidates: ReplayWindowCandidate[];
-  totalTasks: number;
-  scheduledTasks: number;
-  conflictsDetected: number;
-  assetAvailabilityGain: number;
-  schedule: BackendScheduledBlock[];
-  recommendations: ScheduleRecommendation[];
-  dayBreakdown: DayBreakdown[];
-  mlStats?: MlStats;
-  triage?: TriageQueue;
+export interface OptimizationMetrics {
+  scheduledDemands: number;
+  totalDemands: number;
+  deadlinesMetPct: number;
+  weightedDeadlinesMetPct: number;
+  trainsDelayed: number;
+  capacityUtilizationPct: number;
+  resourceConflicts: number;
 }
 
 // ─── Domain types ─────────────────────────────────────────────────────────────
@@ -265,6 +267,8 @@ export interface OptimizationSchedule {
   mlStats?: MlStats | null;
   /** Explainable triage queue — ranked items + rollup counts (replay only). */
   triage?: TriageQueue | null;
+  /** Detailed performance metrics from the optimizer. */
+  metrics?: OptimizationMetrics | null;
 }
 
 export type MlTier = "critical" | "high" | "watch" | "low";

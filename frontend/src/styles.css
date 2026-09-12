@@ -260,3 +260,11 @@
 @utility animate-sweep {
   animation: sweep 2.6s ease-in-out infinite;
 }
+@utility animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

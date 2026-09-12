@@ -36,7 +36,12 @@ public sealed class ReplayBundleService : IReplayBundleService
         if (!File.Exists(bundlePath))
         {
             throw new FileNotFoundException(
-                $"Replay bundle was not found for corridorId='{corridorId}'. Expected file: {bundlePath}",
+                $"RailBlock AI cannot load replay data for corridor '{corridorId}'. " +
+                $"The planning scenario requires a saved timetable snapshot at: {bundlePath}\n\n" +
+                "Steps to fix:\n" +
+                "1. Run `python data/replay/build_bundle.py` to generate DLI-GZB\n" +
+                "2. Run `python data/replay/build_bundle_ndls.py` to generate NDLS-NDB\n" +
+                "3. Restart the demo with `start-demo.bat`",
                 bundlePath);
         }
 

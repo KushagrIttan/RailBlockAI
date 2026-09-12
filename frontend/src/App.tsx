@@ -267,10 +267,11 @@ export default function App() {
 
       {/* ── Left sidebar (fixed width, full height) ── */}
       <Sidebar
-        kpis={kpis}
-        onOpenGuide={() => setGuideOpen(true)}
-        replayContext={schedule?.replayContext}
-      />
+              kpis={kpis}
+              onOpenGuide={() => setGuideOpen(true)}
+              replayContext={schedule?.replayContext}
+              metrics={schedule?.metrics ?? null}
+            />
 
       {/* ── Right: everything else stacks vertically ── */}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
