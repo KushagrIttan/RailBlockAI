@@ -14,9 +14,9 @@ export interface DemoIssueConstraint {
 }
 
 const URGENCY_STYLE: Record<DemoIssueConstraint["urgency"], string> = {
-  emergency: "bg-red-50 text-destructive border-red-200",
-  urgent: "bg-amber-50 text-warning border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
-  planned: "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800",
+  emergency: "bg-tint-destructive text-ink-destructive border-destructive",
+  urgent: "bg-tint-warning text-ink-warning border-warning",
+  planned: "bg-tint-primary text-primary border-primary",
 };
 
 /**
@@ -33,7 +33,7 @@ export function IssueConstraintsPanel({ issues }: { issues: DemoIssueConstraint[
         <h2 className="text-base font-semibold tracking-tight text-foreground">
           Demo issue constraints → backend
         </h2>
-        <span className="ml-auto rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold text-primary">
+        <span className="ml-auto rounded-full bg-tint-primary px-2.5 py-0.5 text-[10px] font-semibold text-primary">
           {issues.length} extra issue{issues.length !== 1 ? "s" : ""} sent on every plan
         </span>
       </div>
@@ -45,7 +45,7 @@ export function IssueConstraintsPanel({ issues }: { issues: DemoIssueConstraint[
         {issues.map((issue) => (
           <div
             key={issue.case_id}
-            className="rounded-lg border border-border bg-muted/60 px-3.5 py-2.5"
+            className="rounded-lg border border-border bg-muted px-3.5 py-2.5"
           >
             <div className="flex flex-wrap items-center gap-2">
               <span className="num text-xs font-semibold text-foreground">
@@ -56,11 +56,11 @@ export function IssueConstraintsPanel({ issues }: { issues: DemoIssueConstraint[
               >
                 {issue.urgency}
               </span>
-              <span className="ml-auto text-[10px] text-muted-foreground/70">
+              <span className="ml-auto text-[10px] text-muted-foreground">
                 {issue.estimated_work_minutes}m · {issue.procedure_profile_id}
               </span>
             </div>
-            <p className="mt-1 text-xs text-foreground/80">{issue.description}</p>
+            <p className="mt-1 text-xs text-foreground">{issue.description}</p>
             <p className="mt-0.5 text-[10px] text-muted-foreground">
               {issue.department} · {issue.section_id} · {issue.location_reference} ·{" "}
               {issue.required_resources.join(", ")}

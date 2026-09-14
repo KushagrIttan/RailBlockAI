@@ -1,4 +1,4 @@
-import { Activity, ClipboardCheck, LayoutDashboard, TrainFront } from "lucide-react";
+import { Activity, LayoutDashboard, TrainFront } from "lucide-react";
 import type { KpiSnapshot, OptimizationMetrics } from "@/lib/railblock/types";
 
 type NavItem = { label: string; icon: React.ReactNode; active?: boolean; badge?: number };
@@ -17,7 +17,7 @@ function NavLink({ label, icon, active, badge }: NavItem) {
       {badge !== undefined && (
         <span
           className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-            active ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+            active ? "bg-tint-primary text-primary" : "bg-muted text-muted-foreground"
           }`}
         >
           {badge}
@@ -45,8 +45,8 @@ function KpiChip({
           ? "bg-destructive"
           : "bg-primary";
   return (
-    <div className="flex items-center justify-between rounded-lg bg-muted px-3 py-2">
-      <span className="text-[11px] text-muted-foreground">{label}</span>
+    <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2">
+      <span className="text-[11px] text-secondary-foreground">{label}</span>
       <div className="flex items-center gap-1.5">
         <span className={`size-1.5 rounded-full ${dot}`} />
         <span className="num text-xs font-semibold text-foreground">{value}</span>
@@ -68,11 +68,14 @@ export function Sidebar({
 }) {
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-card">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 border-b border-border px-5 py-4">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
-          <ClipboardCheck className="size-4 text-primary" />
-        </div>
+      {/* Logo — h-16 to align its rule with the TopBar's */}
+      <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-border px-5">
+        <img
+          src="/emblems/indian-railways.png"
+          alt="Indian Railways"
+          title="Indian Railways emblem — shown for demo familiarity only"
+          className="size-12 shrink-0 rounded-full object-contain"
+        />
         <div>
           <span className="text-sm font-bold tracking-tight text-foreground">
             Rail<span className="text-primary">Block</span>AI
@@ -85,7 +88,7 @@ export function Sidebar({
       <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
         {/* Overview */}
         <div>
-          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-secondary-foreground">
             Overview
           </p>
           <div className="space-y-0.5">
@@ -95,7 +98,7 @@ export function Sidebar({
 
         {/* Corridors */}
         <div>
-          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-secondary-foreground">
             Active Corridor
           </p>
           <div className="space-y-0.5">
@@ -106,7 +109,7 @@ export function Sidebar({
             />
           </div>
           {replayContext && (
-            <p className="mt-1.5 px-3 text-[10px] text-muted-foreground/50">
+            <p className="mt-1.5 px-3 text-[10px] text-muted-foreground">
               Saved · {new Date(replayContext.capturedAt).toLocaleDateString("en-IN")}
             </p>
           )}
@@ -114,7 +117,7 @@ export function Sidebar({
 
         {/* KPI summary */}
         <div>
-          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-secondary-foreground">
             At a glance
           </p>
           <div className="space-y-1.5">
@@ -140,7 +143,7 @@ export function Sidebar({
         {/* Detailed Metrics from Optimizer */}
         {metrics && (
           <div>
-            <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+            <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-secondary-foreground">
               Optimizer Metrics
             </p>
             <div className="space-y-1.5">
@@ -191,11 +194,11 @@ export function Sidebar({
           onClick={onOpenGuide}
           className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
-          <Activity className="size-4 text-success" />
+          <Activity className="size-4 text-ink-success" />
           <span>How this works</span>
         </button>
         <div className="mt-1 flex items-center gap-2.5 rounded-lg px-2 py-2">
-          <div className="flex size-7 items-center justify-center rounded-full bg-primary/15 text-[11px] font-semibold text-primary">
+          <div className="flex size-7 items-center justify-center rounded-full bg-tint-primary text-[11px] font-semibold text-primary">
             RB
           </div>
           <div className="min-w-0">

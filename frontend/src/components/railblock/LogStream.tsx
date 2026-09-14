@@ -4,9 +4,9 @@ import type { LogEntry } from "@/lib/railblock/types";
 
 const LEVEL_CLASS: Record<LogEntry["level"], string> = {
   info:    "text-muted-foreground",
-  warn:    "text-warning",
-  error:   "text-destructive",
-  success: "text-success",
+  warn:    "text-ink-warning",
+  error:   "text-ink-destructive",
+  success: "text-ink-success",
 };
 
 export function LogStream({ logs }: { logs: LogEntry[] }) {
@@ -17,7 +17,7 @@ export function LogStream({ logs }: { logs: LogEntry[] }) {
 
   return (
     <div className="panel-surface overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-border bg-muted/60 px-4 py-2.5">
+      <div className="flex items-center gap-2 border-b border-border bg-muted px-4 py-2.5">
         <Terminal className="size-3.5 text-primary" />
         <span className="text-sm font-semibold text-foreground tracking-tight">
           Activity Log
@@ -30,13 +30,13 @@ export function LogStream({ logs }: { logs: LogEntry[] }) {
       >
         {logs.map((l) => (
           <div key={l.id} className="flex gap-2">
-            <span className="shrink-0 text-muted-foreground/50">[{l.time}]</span>
+            <span className="shrink-0 text-muted-foreground">[{l.time}]</span>
             <span className={LEVEL_CLASS[l.level]}>{l.message}</span>
           </div>
         ))}
-        <div className="flex gap-2 text-success">
+        <div className="flex gap-2 text-ink-success">
           <span>›</span>
-          <span className="inline-block h-3 w-2 animate-pulse bg-success/60" />
+          <span className="inline-block h-3 w-2 animate-pulse bg-success" />
         </div>
       </div>
     </div>

@@ -54,7 +54,7 @@ function StatPill({
           {label}
         </p>
         <p className="text-lg font-bold tabular-nums text-foreground leading-tight">{value}</p>
-        {sub && <p className="text-[10px] text-muted-foreground/70">{sub}</p>}
+        {sub && <p className="text-[10px] text-muted-foreground">{sub}</p>}
       </div>
     </div>
   );
@@ -94,7 +94,7 @@ export function WeekView({
             7-Day Maintenance Schedule Overview
           </h2>
         </div>
-        <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-700 border border-indigo-200">
+        <span className="rounded-full bg-tint-primary px-2.5 py-0.5 text-[10px] font-semibold text-primary border border-primary">
           Weekly Plan · DLI–GZB
         </span>
       </div>
@@ -102,32 +102,32 @@ export function WeekView({
       {/* KPI strip */}
       <div className="grid grid-cols-2 gap-3 border-b border-border bg-card px-5 py-4 sm:grid-cols-4">
         <StatPill
-          icon={<CheckCircle2 className="size-5 text-green-600" />}
+          icon={<CheckCircle2 className="size-5 text-ink-success" />}
           label="Scheduled"
           value={totalScheduled}
           sub={`of ${totalScheduled + totalDeferred} requests`}
-          accent="border-green-200"
+          accent="border-success"
         />
         <StatPill
-          icon={<Clock3 className="size-5 text-orange-500" />}
+          icon={<Clock3 className="size-5 text-ink-warning" />}
           label="Deferred"
           value={totalDeferred}
           sub="could not be placed"
-          accent="border-orange-200"
+          accent="border-warning"
         />
         <StatPill
-          icon={<TrendingUp className="size-5 text-indigo-500" />}
+          icon={<TrendingUp className="size-5 text-primary" />}
           label="Avg. availability gain"
           value={`${avgAvailability}%`}
           sub="per planning day"
-          accent="border-indigo-200"
+          accent="border-primary"
         />
         <StatPill
-          icon={<CalendarDays className="size-5 text-sky-500" />}
+          icon={<CalendarDays className="size-5 text-primary" />}
           label="Total work time"
           value={`${Math.round(totalWork / 60 * 10) / 10} hrs`}
           sub={`${totalWork} minutes planned`}
-          accent="border-sky-200"
+          accent="border-primary"
         />
       </div>
 
@@ -263,7 +263,7 @@ export function WeekView({
       </div>
 
       {/* Day pill row */}
-      <div className="flex flex-wrap gap-2 border-t border-border bg-muted/60 px-5 py-3">
+      <div className="flex flex-wrap gap-2 border-t border-border bg-muted px-5 py-3">
         {dayBreakdown.map((day, i) => {
           const isSelected = i === selectedDay;
           const isPeak = i === peakDay;
@@ -274,27 +274,27 @@ export function WeekView({
               title={`${day.scheduled} scheduled · ${day.deferred} deferred · ${day.availabilityGainPct}% window used`}
               className={`flex flex-col items-center rounded-lg border px-3 py-1.5 text-center transition-all cursor-pointer ${
                 isSelected
-                  ? "border-indigo-400 bg-indigo-50 ring-1 ring-indigo-300 shadow-xs"
-                  : "border-border bg-card hover:bg-accent/40"
+                  ? "border-primary bg-tint-primary ring-1 ring-primary shadow-xs"
+                  : "border-border bg-card hover:bg-accent"
               }`}
             >
               <span
-                className={`text-[11px] font-semibold ${isSelected ? "text-indigo-700" : "text-foreground"}`}
+                className={`text-[11px] font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}
               >
                 {day.label}
               </span>
               <span className="mt-0.5 flex items-center gap-1 text-[9px] text-muted-foreground">
-                <span className="size-1.5 rounded-full bg-green-500" />
+                <span className="size-1.5 rounded-full bg-success" />
                 {day.scheduled}
                 {day.deferred > 0 && (
                   <>
-                    <span className="size-1.5 rounded-full bg-orange-400" />
+                    <span className="size-1.5 rounded-full bg-warning" />
                     {day.deferred}
                   </>
                 )}
               </span>
               {isPeak && (
-                <span className="mt-0.5 rounded bg-green-100 px-1 py-0 text-[8px] font-bold text-green-700">
+                <span className="mt-0.5 rounded bg-tint-success px-1 py-0 text-[8px] font-bold text-ink-success">
                   peak
                 </span>
               )}
@@ -303,7 +303,7 @@ export function WeekView({
         })}
       </div>
 
-      <p className="border-t border-border px-5 py-2.5 text-[10px] text-muted-foreground/60">
+      <p className="border-t border-border px-5 py-2.5 text-[10px] text-muted-foreground">
         Click any bar or day pill to switch the detail view below to that planning day.
       </p>
     </div>

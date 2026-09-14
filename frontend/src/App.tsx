@@ -293,14 +293,14 @@ export default function App() {
 
           {/* Hero banner */}
           <div
-            className="mx-6 mt-6 overflow-hidden rounded-xl bg-blue-50 border border-blue-100 dark:bg-[#0f1a2e] dark:border-[#223a5f]"
+            className="mx-6 mt-6 overflow-hidden rounded-xl bg-tint-primary border border-primary"
             style={{ height: "140px" }}
           >
             <div className="relative h-full w-full overflow-hidden">
               {/* Corridor title overlaid */}
               <div className="absolute bottom-5 left-6">
-                <p className="text-[11px] font-medium uppercase tracking-widest text-blue-400 dark:text-blue-300/80">Maintenance Planning</p>
-                <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
+                <p className="text-[11px] font-medium uppercase tracking-widest text-primary">Maintenance Planning</p>
+                <h1 className="mt-1 text-xl font-bold tracking-tight text-foreground">
                   {corridor.label}
                 </h1>
               </div>
@@ -309,12 +309,12 @@ export default function App() {
 
           {/* Error banner */}
           {fetchError && (
-            <div role="alert" className="mx-6 mt-4 flex flex-col gap-3 rounded-lg border border-red-200 bg-red-50 px-5 py-4 dark:border-red-800 dark:bg-red-950">
+            <div role="alert" className="mx-6 mt-4 flex flex-col gap-3 rounded-lg border border-destructive bg-tint-destructive px-5 py-4">
               <div className="flex items-start gap-3">
-                <ServerCrash className="mt-0.5 size-5 shrink-0 text-destructive" />
+                <ServerCrash className="mt-0.5 size-5 shrink-0 text-ink-destructive" />
                 <div className="flex-1 space-y-1">
-                  <p className="text-sm font-semibold text-destructive">{fetchError.title}</p>
-                  {fetchError.detail && <p className="text-xs text-destructive/70 break-words">{fetchError.detail}</p>}
+                  <p className="text-sm font-semibold text-ink-destructive">{fetchError.title}</p>
+                  {fetchError.detail && <p className="text-xs text-ink-destructive break-words">{fetchError.detail}</p>}
                   <p className="text-xs text-muted-foreground mt-1">Check that both services are running:</p>
                   <ul className="mt-1 space-y-0.5 text-xs text-muted-foreground font-mono">
                     <li>1. cd backend/RailBlockAI.Api &amp;&amp; dotnet run --launch-profile http</li>
@@ -323,7 +323,7 @@ export default function App() {
                 </div>
                 <Button size="sm" variant="outline" disabled={loading}
                   onClick={() => { const c = { value: false }; void loadSchedule(corridorId, horizon, c); }}
-                  className="shrink-0 border-red-200 text-destructive hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-950">
+                  className="shrink-0 border-destructive text-ink-destructive hover:bg-tint-destructive">
                   <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Retry
                 </Button>
               </div>
@@ -333,15 +333,15 @@ export default function App() {
           {/* Planning controls: horizon toggle + day selector */}
           {!fetchError && !loading && (
             <div className="mx-6 mt-4 flex flex-wrap items-center gap-3">
-              <div className="flex overflow-hidden rounded-md border border-border bg-background/60">
+              <div className="flex overflow-hidden rounded-md border border-border bg-background">
                 {(Object.keys(HORIZON_LABELS) as PlanningHorizon[]).map((hz) => (
                   <button
                     key={hz}
                     onClick={() => setHorizon(hz)}
                     className={`px-3 py-1.5 text-xs font-medium transition-colors ${
                       horizon === hz
-                        ? "bg-success/15 text-success"
-                        : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     }`}
                   >
                     {HORIZON_LABELS[hz]}
@@ -361,15 +361,15 @@ export default function App() {
                       title={`${day.scheduled} scheduled · ${day.deferred} deferred · ${day.availabilityGainPct}% window used`}
                       className={`rounded-md border px-2.5 py-1 text-[11px] font-medium transition-colors ${
                         i === clampedDay
-                          ? "border-success/50 bg-success/15 text-success"
-                          : "border-border bg-background/50 text-muted-foreground hover:bg-accent/50"
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background text-muted-foreground hover:bg-accent"
                       }`}
                     >
                       {day.label}
                       <span className="ml-1.5 inline-flex items-center gap-1 text-[9px] opacity-80">
-                        <span className="size-1.5 rounded-full bg-success/80" />
+                        <span className="size-1.5 rounded-full bg-success" />
                         {day.scheduled}
-                        {day.deferred > 0 && <span className="size-1.5 rounded-full bg-destructive/70" />}
+                        {day.deferred > 0 && <span className="size-1.5 rounded-full bg-destructive" />}
                       </span>
                     </button>
                   ))}
@@ -390,7 +390,7 @@ export default function App() {
           <div className="mx-6 mt-5">
             {fetchError ? (
               <div className="panel-surface flex items-center justify-center gap-3 py-16 text-muted-foreground">
-                <AlertTriangle className="size-5 text-destructive/60" />
+                <AlertTriangle className="size-5 text-ink-destructive" />
                 <p className="text-sm">Chart unavailable — no schedule data.</p>
               </div>
             ) : horizon === "weekly" ? (
