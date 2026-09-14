@@ -5,15 +5,15 @@ export type Theme = "light" | "dark";
 const STORAGE_KEY = "railblock-theme";
 
 function initialTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
+  if (typeof window === "undefined") return "light";
   try {
-    return window.localStorage.getItem(STORAGE_KEY) === "light" ? "light" : "dark";
+    return window.localStorage.getItem(STORAGE_KEY) === "dark" ? "dark" : "light";
   } catch {
-    return "dark";
+    return "light";
   }
 }
 
-/** App theme (dark by default). Toggling flips the `.dark` class on <html>. */
+/** App theme (light by default, IRCTC-portal style). Toggling flips the `.dark` class on <html>. */
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(initialTheme);
 

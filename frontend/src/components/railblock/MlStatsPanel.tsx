@@ -2,23 +2,23 @@ import { Brain } from "lucide-react";
 import type { MlStats, MlTier } from "@/lib/railblock/types";
 
 const TIER_BG: Record<MlTier, string> = {
-  critical: "bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
-  high: "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800",
-  watch: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
-  low: "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
+  critical: "bg-tint-destructive text-ink-destructive border-destructive",
+  high: "bg-tint-warning text-ink-warning border-warning",
+  watch: "bg-tint-warning text-ink-warning border-border",
+  low: "bg-muted text-muted-foreground border-border",
 };
 
 const TIER_DOT: Record<MlTier, string> = {
-  critical: "bg-red-500",
-  high: "bg-orange-500",
-  watch: "bg-amber-400",
-  low: "bg-slate-400",
+  critical: "bg-destructive",
+  high: "bg-warning",
+  watch: "bg-warning",
+  low: "bg-muted-foreground",
 };
 
 const STATUS_STYLE: Record<string, string> = {
-  Scheduled: "bg-success/15 text-success",
-  Deferred: "bg-destructive/10 text-destructive",
-  "Shadow Block": "bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300",
+  Scheduled: "bg-tint-success text-ink-success",
+  Deferred: "bg-tint-destructive text-ink-destructive",
+  "Shadow Block": "bg-tint-primary text-primary",
 };
 
 export function MlStatsPanel({
@@ -38,7 +38,7 @@ export function MlStatsPanel({
   return (
     <div className="panel-surface overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-border bg-muted/60 px-4 py-2.5">
+      <div className="flex items-center gap-2 border-b border-border bg-muted px-4 py-2.5">
         <Brain className="size-3.5 text-primary" />
         <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
           ML Decision Intelligence
@@ -52,8 +52,8 @@ export function MlStatsPanel({
           <span
             className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
               stats.active
-                ? "border-success/40 bg-success/10 text-success"
-                : "border-warning/40 bg-warning/10 text-warning"
+                ? "border-success bg-tint-success text-ink-success"
+                : "border-warning bg-tint-warning text-ink-warning"
             }`}
           >
             <span className={`size-1.5 rounded-full ${stats.active ? "bg-success" : "bg-warning"}`} />
@@ -74,7 +74,7 @@ export function MlStatsPanel({
       <div className="px-4 pt-3">
         <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div
-            className="absolute left-0 h-full rounded-full bg-primary/30"
+            className="absolute left-0 h-full rounded-full bg-tint-primary"
             style={{ width: "100%" }}
           />
           <div
@@ -114,7 +114,7 @@ export function MlStatsPanel({
                 className="flex items-center gap-2 py-1.5 text-[11px]"
               >
                 <span className={`size-1.5 shrink-0 rounded-full ${TIER_DOT[tier]}`} />
-                <span className="flex-1 truncate font-medium text-foreground/80">
+                <span className="flex-1 truncate font-medium text-foreground">
                   {d.caseId}
                 </span>
                 <span className="num shrink-0 w-10 text-right text-muted-foreground">
@@ -132,7 +132,7 @@ export function MlStatsPanel({
                 >
                   {d.status}
                 </span>
-                <span className="shrink-0 w-12 text-right text-[10px] text-muted-foreground/50">
+                <span className="shrink-0 w-12 text-right text-[10px] text-muted-foreground">
                   day {d.day}
                 </span>
               </div>
@@ -142,7 +142,7 @@ export function MlStatsPanel({
       </div>
 
       {/* Live footer */}
-      <div className="border-t border-border bg-muted/60 px-4 py-2 text-[10px] text-muted-foreground">
+      <div className="border-t border-border bg-muted px-4 py-2 text-[10px] text-muted-foreground">
         Live: {stats.decisionsMade} decisions · {approvedCount} approved · {pendingCount} pending
       </div>
     </div>
@@ -160,13 +160,13 @@ function StatTile({
 }) {
   return (
     <div className="panel-surface rounded-md p-2.5">
-      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground/60">
+      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
-      <p className="num mt-0.5 text-lg font-semibold leading-tight text-foreground/90">
+      <p className="num mt-0.5 text-lg font-semibold leading-tight text-foreground">
         {value}
       </p>
-      <p className="text-[9px] text-muted-foreground/50">{sub}</p>
+      <p className="text-[9px] text-muted-foreground">{sub}</p>
     </div>
   );
 }

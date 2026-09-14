@@ -11,9 +11,9 @@ import { SLOT_COUNT } from "@/lib/railblock/service";
 import type { ShadowBlock, Train } from "@/lib/railblock/types";
 
 const CLASS_STYLE: Record<Train["trainClass"], string> = {
-  freight: "border-gray-400 bg-gray-200 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300",
-  express: "border-blue-400 bg-blue-100 text-blue-700 dark:border-blue-500 dark:bg-blue-950 dark:text-blue-300",
-  suburban: "border-sky-400 bg-sky-100 text-sky-700 dark:border-sky-500 dark:bg-sky-950 dark:text-sky-300",
+  freight: "border-border bg-muted text-muted-foreground",
+  express: "border-primary bg-tint-primary text-primary",
+  suburban: "border-train-suburban bg-tint-primary text-train-suburban",
 };
 
 function sectionLabel(section: string) {
@@ -72,10 +72,10 @@ export function TrackView({
           </h2>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-gray-200 px-2.5 py-0.5 text-[10px] font-semibold text-gray-700">
+          <span className="rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
             3 Simulated Situations
           </span>
-          <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-[10px] font-medium text-green-800 border border-green-300">
+          <span className="rounded-full bg-tint-success px-2.5 py-0.5 text-[10px] font-medium text-ink-success border border-success">
             Saved timetable
           </span>
         </div>
@@ -88,34 +88,34 @@ export function TrackView({
         </span>
         {shadowBlocks.map((sb, idx) => {
           const isSelected = activeBlock?.id === sb.id;
+          // Solid status boxes: full fill, white content. Revert to the
+          // ledger style (white + status edge) if the team rejects this.
           const statusBadge = sb.resolved
-            ? "border-gray-300 bg-muted text-gray-400 line-through"
+            ? "border-border bg-muted text-muted-foreground line-through"
             : sb.status === "scheduled"
-              ? "border-green-400 bg-green-100 text-green-800"
-              : sb.status === "blocked"
-                ? "border-red-400 bg-red-100 text-red-800"
-                : "border-amber-400 bg-amber-100 text-amber-800";
+              ? "border-[#00A860] bg-[#00A860] text-success-foreground"
+              : "border-[#D60300] bg-[#D60300] text-white";
 
           const icon = sb.resolved ? (
-            <ShieldCheck className="size-3 text-gray-400" />
+            <ShieldCheck className="size-3 text-muted-foreground" />
           ) : sb.status === "scheduled" ? (
-            <CheckCircle2 className="size-3 text-green-600" />
+            <CheckCircle2 className="size-3" />
           ) : sb.status === "blocked" ? (
-            <AlertOctagon className="size-3 text-red-600" />
+            <AlertOctagon className="size-3" />
           ) : (
-            <Clock3 className="size-3 text-amber-600" />
+            <Clock3 className="size-3" />
           );
 
           return (
             <button
               key={sb.id}
               onClick={() => onSelectConflict?.(sb.conflictId)}
-              className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium cursor-pointer ${
                 isSelected
                   ? sb.resolved
-                    ? "border-gray-400 bg-muted text-gray-500 ring-1 ring-gray-400 shadow-xs"
-                    : "border-primary bg-primary/10 text-primary font-semibold ring-1 ring-primary shadow-xs"
-                  : `${statusBadge} hover:opacity-90`
+                    ? "border-muted-foreground bg-muted text-muted-foreground"
+                    : `${statusBadge} font-semibold shadow-xs ring-2 ring-foreground`
+                  : `${statusBadge} hover:brightness-110`
               }`}
             >
               {icon}
@@ -123,7 +123,7 @@ export function TrackView({
                 Case {idx + 1}: {sb.label}
               </span>
               {sb.resolved && (
-                <span className="ml-0.5 rounded bg-gray-200 px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-gray-500 no-underline" style={{ textDecoration: "none" }}>
+                <span className="ml-0.5 rounded border border-border bg-card px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-muted-foreground no-underline" style={{ textDecoration: "none" }}>
                   resolved
                 </span>
               )}
@@ -133,8 +133,8 @@ export function TrackView({
       </div>
 
       {/* Time axis */}
-      <div className="flex border-b border-border bg-muted/40">
-        <div className="w-32 shrink-0 border-r border-border px-4 py-2 text-[10px] font-medium uppercase tracking-widest text-muted-foreground/60">
+      <div className="flex border-b border-border bg-muted">
+        <div className="w-32 shrink-0 border-r border-border px-4 py-2 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
           Track section
         </div>
         <div
@@ -144,7 +144,7 @@ export function TrackView({
           {slots.map((s) => (
             <div
               key={s}
-              className="num border-r border-border/50 py-2 text-center text-[9px] text-muted-foreground/50 last:border-r-0"
+              className="num border-r border-border py-2 text-center text-[9px] text-muted-foreground last:border-r-0"
             >
               {s % 4 === 0 ? `${String(8 + Math.floor(s / 4)).padStart(2, "0")}:00` : ""}
             </div>
@@ -156,14 +156,14 @@ export function TrackView({
       <div className="relative">
         {/* NOW marker */}
         <div
-          className="pointer-events-none absolute bottom-0 top-0 z-30 w-px bg-success/70"
+          className="pointer-events-none absolute bottom-0 top-0 z-30 w-px bg-success"
           style={{
             left: `calc(8rem + ${((nowSlot + 0.5) / SLOT_COUNT) * 100}% - ${
               ((nowSlot + 0.5) / SLOT_COUNT) * 8
             }rem)`,
           }}
         >
-          <span className="absolute -top-0.5 -translate-x-1/2 rounded bg-success px-1.5 py-0.5 text-[8px] font-bold text-white shadow-xs">
+          <span className="absolute -top-0.5 -translate-x-1/2 rounded bg-success px-1.5 py-0.5 text-[8px] font-bold text-success-foreground shadow-xs">
             {windowLabel}
           </span>
         </div>
@@ -178,14 +178,14 @@ export function TrackView({
             <div
               key={sector}
               className={`flex border-b border-border last:border-b-0 ${
-                idx % 2 === 0 ? "" : "bg-muted/40"
+                idx % 2 === 0 ? "" : "bg-muted"
               }`}
             >
               <div className="flex w-32 shrink-0 flex-col justify-center border-r border-border px-4 py-4">
                 <span className="text-xs font-semibold text-foreground">
                   {sectionLabel(sector)}
                 </span>
-                <span className="mt-0.5 text-[10px] text-muted-foreground/60">
+                <span className="mt-0.5 text-[10px] text-muted-foreground">
                   {unresolvedCount > 0
                     ? `${unresolvedCount} situation${unresolvedCount !== 1 ? "s" : ""}`
                     : rowShadows.length > 0
@@ -202,7 +202,7 @@ export function TrackView({
                 }}
               >
                 {slots.map((s) => (
-                  <div key={s} className="border-r border-border/30 last:border-r-0" />
+                  <div key={s} className="border-r border-border last:border-r-0" />
                 ))}
 
                 {/* Maintenance / Situation blocks on the timeline */}
@@ -217,17 +217,17 @@ export function TrackView({
                         onClick={() => onSelectConflict?.(sb.conflictId)}
                         title={`${sb.label} · Resolved by the optimization engine`}
                         className={`absolute top-2 z-20 flex h-9.5 items-center gap-1.5 overflow-hidden rounded-md px-2 text-left text-[10px] font-semibold transition-all cursor-pointer
-                          border border-gray-300 bg-muted text-gray-400 opacity-70
-                          ${isSelected ? "ring-2 ring-gray-400 shadow-sm opacity-90" : "hover:opacity-85"}`}
+                          border border-border bg-muted text-muted-foreground opacity-70
+                          ${isSelected ? "ring-2 ring-muted-foreground shadow-sm opacity-90" : "hover:opacity-85"}`}
                         style={{
                           left: `${(sb.startSlot / SLOT_COUNT) * 100}%`,
                           width: `${(sb.span / SLOT_COUNT) * 100}%`,
                         }}
                       >
-                        <ShieldCheck className="size-3 shrink-0 text-emerald-500" />
+                        <ShieldCheck className="size-3 shrink-0 text-ink-success" />
                         <div className="flex flex-col overflow-hidden leading-tight">
-                          <span className="truncate line-through decoration-gray-400">{sb.label}</span>
-                          <span className="text-[8.5px] font-semibold text-emerald-600 no-underline">
+                          <span className="truncate line-through decoration-muted-foreground">{sb.label}</span>
+                          <span className="text-[8.5px] font-semibold text-ink-success no-underline">
                             ✔ Resolved
                           </span>
                         </div>
@@ -243,22 +243,22 @@ export function TrackView({
 
                                     if (sb.status === "scheduled") {
                                       styleClass = isSelected
-                                        ? "border-green-600 bg-green-200 text-green-900 ring-2 ring-green-600 shadow-md z-25"
-                                        : "border-green-400 bg-green-100 text-green-800 hover:border-green-500";
-                                      icon = <CheckCircle2 className="size-3 shrink-0 text-green-700" />;
+                                        ? "border-success bg-tint-success text-ink-success ring-2 ring-success shadow-md z-25"
+                                        : "border-success bg-tint-success text-ink-success hover:border-success";
+                                      icon = <CheckCircle2 className="size-3 shrink-0 text-ink-success" />;
                                       statusTag = "✅ Approved Window";
                                     } else if (sb.status === "blocked") {
                                       styleClass = isSelected
-                                        ? "border-2 border-dashed border-red-600 bg-red-200 text-red-950 ring-2 ring-red-500 shadow-md z-25"
-                                        : "border border-dashed border-red-400 bg-red-100 text-red-800 hover:border-red-500";
-                                      icon = <AlertOctagon className="size-3 shrink-0 text-red-600" />;
+                                        ? "border-2 border-dashed border-destructive bg-tint-destructive text-ink-destructive ring-2 ring-destructive shadow-md z-25"
+                                        : "border border-dashed border-destructive bg-tint-destructive text-ink-destructive hover:border-destructive";
+                                      icon = <AlertOctagon className="size-3 shrink-0 text-ink-destructive" />;
                                       statusTag = "❌ Blocked by Peak Traffic";
                                       pulseClass = "animate-pulse";
                                     } else {
                                       styleClass = isSelected
-                                        ? "border-2 border-dashed border-amber-600 bg-amber-200 text-amber-950 ring-2 ring-amber-500 shadow-md z-25"
-                                        : "border border-dashed border-amber-400 bg-amber-100 text-amber-900 hover:border-amber-500";
-                                      icon = <Clock3 className="size-3 shrink-0 text-amber-600" />;
+                                        ? "border-2 border-dashed border-warning bg-tint-warning text-ink-warning ring-2 ring-warning shadow-md z-25"
+                                        : "border border-dashed border-warning bg-tint-warning text-ink-warning hover:border-warning";
+                                      icon = <Clock3 className="size-3 shrink-0 text-ink-warning" />;
                                       statusTag = "⏳ Deferred (Needs Longer Gap)";
                                     }
 
@@ -293,7 +293,7 @@ export function TrackView({
                   let trainStyle = style;
                   if (isClashing) {
                     trainStyle =
-                      "border-red-400 bg-red-100 text-red-900 font-bold ring-2 ring-red-500 animate-pulse shadow-sm";
+                      "border-destructive bg-tint-destructive text-ink-destructive font-bold ring-2 ring-destructive animate-pulse shadow-sm";
                   }
 
                   return (
@@ -304,7 +304,7 @@ export function TrackView({
                         isClashing
                           ? "opacity-100 z-20"
                           : active
-                            ? "opacity-100 ring-2 ring-primary/40"
+                            ? "opacity-100 ring-2 ring-primary"
                             : activeBlock
                               ? "opacity-80"
                               : "opacity-85"
@@ -323,7 +323,7 @@ export function TrackView({
                       <TrainFront className="size-3 shrink-0" />
                       <span className="num font-semibold truncate">{t.number}</span>
                       {isClashing && (
-                        <span className="rounded bg-red-600 px-1 py-0.2 text-[8px] font-bold text-white shrink-0">
+                        <span className="rounded bg-destructive px-1 py-0.2 text-[8px] font-bold text-white shrink-0">
                           CLASH
                         </span>
                       )}
@@ -341,22 +341,22 @@ export function TrackView({
         <div
           className={`flex items-start gap-2.5 border-t px-5 py-2.5 text-xs transition-colors ${
             activeBlock.resolved
-              ? "border-emerald-300 bg-emerald-50 text-emerald-900"
+              ? "border-success bg-tint-success text-ink-success"
               : activeBlock.status === "scheduled"
-                ? "border-green-300 bg-green-100 text-green-900"
+                ? "border-success bg-tint-success text-ink-success"
                 : activeBlock.status === "blocked"
-                  ? "border-red-300 bg-red-100 text-red-900"
-                  : "border-amber-300 bg-amber-100 text-amber-900"
+                  ? "border-destructive bg-tint-destructive text-ink-destructive"
+                  : "border-warning bg-tint-warning text-ink-warning"
           }`}
         >
           {activeBlock.resolved ? (
-            <ShieldCheck className="size-4 shrink-0 text-emerald-600 mt-0.5" />
+            <ShieldCheck className="size-4 shrink-0 text-ink-success mt-0.5" />
           ) : activeBlock.status === "scheduled" ? (
-            <CheckCircle2 className="size-4 shrink-0 text-green-600 mt-0.5" />
+            <CheckCircle2 className="size-4 shrink-0 text-ink-success mt-0.5" />
           ) : activeBlock.status === "blocked" ? (
-            <AlertOctagon className="size-4 shrink-0 text-red-600 mt-0.5" />
+            <AlertOctagon className="size-4 shrink-0 text-ink-destructive mt-0.5" />
           ) : (
-            <Clock3 className="size-4 shrink-0 text-amber-600 mt-0.5" />
+            <Clock3 className="size-4 shrink-0 text-ink-warning mt-0.5" />
           )}
           <div className="flex-1">
             <span className="font-semibold">{activeBlock.label}: </span>
@@ -377,24 +377,24 @@ export function TrackView({
       <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-1.5 border-t border-border bg-muted px-5 py-2 text-[10px] text-muted-foreground">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <span className="flex items-center gap-1.5">
-            <span className="size-2 rounded-sm bg-green-500" />
+            <span className="size-2 rounded-sm bg-success" />
             Approved Shadow Block
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2 rounded-sm border border-dashed border-red-500 bg-red-200" />
+            <span className="size-2 rounded-sm border border-dashed border-destructive bg-tint-destructive" />
             Blocked by Peak Traffic
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2 rounded-sm border border-dashed border-amber-500 bg-amber-200" />
+            <span className="size-2 rounded-sm border border-dashed border-warning bg-tint-warning" />
             Deferred (Needs Longer Gap)
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2 rounded-sm border border-gray-300 bg-muted" />
-            <span className="text-emerald-600 font-semibold">✔</span>
+            <span className="size-2 rounded-sm border border-border bg-muted" />
+            <span className="text-ink-success font-semibold">✔</span>
             Resolved by Engine
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="rounded bg-red-600 px-1 text-[8px] font-bold text-white">
+            <span className="rounded bg-destructive px-1 text-[8px] font-bold text-white">
               CLASH
             </span>
             Blocking Train
@@ -403,15 +403,15 @@ export function TrackView({
 
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <span className="flex items-center gap-1">
-            <TrainFront className="size-3 text-gray-500" />
+            <TrainFront className="size-3 text-train-freight" />
             Freight
           </span>
           <span className="flex items-center gap-1">
-            <TrainFront className="size-3 text-blue-500" />
+            <TrainFront className="size-3 text-train-express" />
             Express
           </span>
           <span className="flex items-center gap-1">
-            <TrainFront className="size-3 text-sky-500" />
+            <TrainFront className="size-3 text-train-suburban" />
             Suburban
           </span>
         </div>

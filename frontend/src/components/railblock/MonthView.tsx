@@ -90,7 +90,7 @@ function StatPill({
           {label}
         </p>
         <p className="text-lg font-bold tabular-nums text-foreground leading-tight">{value}</p>
-        {sub && <p className="text-[10px] text-muted-foreground/70">{sub}</p>}
+        {sub && <p className="text-[10px] text-muted-foreground">{sub}</p>}
       </div>
     </div>
   );
@@ -136,7 +136,7 @@ export function MonthView({
             30-Day Maintenance Schedule Overview
           </h2>
         </div>
-        <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-[10px] font-semibold text-violet-700 border border-violet-200">
+        <span className="rounded-full bg-tint-primary px-2.5 py-0.5 text-[10px] font-semibold text-primary border border-primary">
           Monthly Plan · DLI–GZB
         </span>
       </div>
@@ -144,32 +144,32 @@ export function MonthView({
       {/* KPI strip */}
       <div className="grid grid-cols-2 gap-3 border-b border-border bg-card px-5 py-4 sm:grid-cols-4">
         <StatPill
-          icon={<CheckCircle2 className="size-5 text-green-600" />}
+          icon={<CheckCircle2 className="size-5 text-ink-success" />}
           label="Scheduled"
           value={totalScheduled}
           sub={`of ${totalScheduled + totalDeferred} requests`}
-          accent="border-green-200"
+          accent="border-success"
         />
         <StatPill
-          icon={<Clock3 className="size-5 text-orange-500" />}
+          icon={<Clock3 className="size-5 text-ink-warning" />}
           label="Deferred"
           value={totalDeferred}
           sub="could not be placed"
-          accent="border-orange-200"
+          accent="border-warning"
         />
         <StatPill
-          icon={<TrendingUp className="size-5 text-indigo-500" />}
+          icon={<TrendingUp className="size-5 text-primary" />}
           label="Avg. availability gain"
           value={`${avgAvailability}%`}
           sub="across 30 days"
-          accent="border-indigo-200"
+          accent="border-primary"
         />
         <StatPill
-          icon={<Wrench className="size-5 text-sky-500" />}
+          icon={<Wrench className="size-5 text-primary" />}
           label="Total work time"
           value={`${Math.round((totalWork / 60) * 10) / 10} hrs`}
           sub={`${totalWork} min over the month`}
-          accent="border-sky-200"
+          accent="border-primary"
         />
       </div>
 
@@ -259,7 +259,7 @@ export function MonthView({
       </div>
 
       {/* Divider */}
-      <div className="border-t border-border/60 mx-5" />
+      <div className="border-t border-border mx-5" />
 
       {/* Availability trend area chart */}
       <div className="px-5 pt-4 pb-2">
@@ -332,7 +332,7 @@ export function MonthView({
       </div>
 
       {/* Divider */}
-      <div className="border-t border-border/60 mx-5" />
+      <div className="border-t border-border mx-5" />
 
       {/* Daily compact bar — 30 narrow bars */}
       <div className="px-5 pt-4 pb-2">
@@ -409,7 +409,7 @@ export function MonthView({
       </div>
 
       {/* Week pill row */}
-      <div className="flex flex-wrap gap-2 border-t border-border bg-muted/60 px-5 py-3">
+      <div className="flex flex-wrap gap-2 border-t border-border bg-muted px-5 py-3">
         {weekBuckets.map((w, i) => {
           const isSelected = i === selectedWeekIdx;
           const isPeak = i === peakWeekIdx;
@@ -422,27 +422,27 @@ export function MonthView({
               title={`${w.scheduled} scheduled · ${w.deferred} deferred · ${Math.round(w.workMinutes / 60 * 10) / 10} hrs work`}
               className={`flex flex-col items-center rounded-lg border px-4 py-1.5 transition-all cursor-pointer ${
                 isSelected
-                  ? "border-violet-400 bg-violet-50 ring-1 ring-violet-300 shadow-xs"
-                  : "border-border bg-card hover:bg-accent/40"
+                  ? "border-primary bg-tint-primary ring-1 ring-primary shadow-xs"
+                  : "border-border bg-card hover:bg-accent"
               }`}
             >
               <span
-                className={`text-[11px] font-semibold ${isSelected ? "text-violet-700" : "text-foreground"}`}
+                className={`text-[11px] font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}
               >
                 {w.week}
               </span>
               <span className="mt-0.5 flex items-center gap-1 text-[9px] text-muted-foreground">
-                <span className="size-1.5 rounded-full bg-green-500" />
+                <span className="size-1.5 rounded-full bg-success" />
                 {w.scheduled}
                 {w.deferred > 0 && (
                   <>
-                    <span className="size-1.5 rounded-full bg-orange-400" />
+                    <span className="size-1.5 rounded-full bg-warning" />
                     {w.deferred}
                   </>
                 )}
               </span>
               {isPeak && (
-                <span className="mt-0.5 rounded bg-green-100 px-1 py-0 text-[8px] font-bold text-green-700">
+                <span className="mt-0.5 rounded bg-tint-success px-1 py-0 text-[8px] font-bold text-ink-success">
                   peak
                 </span>
               )}
@@ -451,7 +451,7 @@ export function MonthView({
         })}
       </div>
 
-      <p className="border-t border-border px-5 py-2.5 text-[10px] text-muted-foreground/60">
+      <p className="border-t border-border px-5 py-2.5 text-[10px] text-muted-foreground">
         Click any chart element or week pill to drill into that day's Gantt view in the work queue below.
       </p>
     </div>

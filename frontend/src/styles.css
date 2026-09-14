@@ -10,8 +10,8 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Noto Sans", "Segoe UI", Mangal, system-ui, sans-serif;
+  --font-mono: "Noto Sans", "Segoe UI", system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -37,9 +37,24 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-navy: var(--navy);
+  --color-navy-foreground: var(--navy-foreground);
+  --color-navy-soft: var(--navy-soft);
+  --color-navy-text: var(--navy-text);
+  --color-navy-line: var(--navy-line);
+  --color-tint-primary: var(--tint-primary);
+  --color-tint-success: var(--tint-success);
+  --color-tint-warning: var(--tint-warning);
+  --color-tint-destructive: var(--tint-destructive);
+  --color-ink-success: var(--ink-success);
+  --color-ink-warning: var(--ink-warning);
+  --color-ink-destructive: var(--ink-destructive);
   --color-freight: var(--freight);
   --color-express: var(--express);
   --color-suburban: var(--suburban);
+  --color-train-freight: var(--train-freight);
+  --color-train-express: var(--train-express);
+  --color-train-suburban: var(--train-suburban);
   --color-sidebar: var(--card);
   --color-sidebar-foreground: var(--foreground);
   --color-sidebar-primary: var(--primary);
@@ -50,107 +65,154 @@
   --color-sidebar-ring: var(--ring);
 }
 
-/* ─── Light palette (soft off-white surfaces, never pure #fff) ─────────────── */
+/* ─── Light palette — IRCTC/RailYatri-inspired railway portal ────────────────
+   Deep railway blue primary, signal-red accent, saffron warning, on white. */
 :root {
   --radius: 0.5rem;
 
-  --background: #f9fafb;
-  --foreground: #111827;
+  --background: #f2f5f9;
+  --foreground: #17263f;
 
-  --panel: #fcfcfa;
-  --card: #fcfcfa;
-  --card-foreground: #111827;
-  --popover: #fcfcfa;
-  --popover-foreground: #111827;
+  --panel: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #17263f;
+  --popover: #ffffff;
+  --popover-foreground: #17263f;
 
-  /* Clean blue */
-  --primary: #2563eb;
+  /* Deep railway blue (cf. RailYatri #01478c) */
+  --primary: #01478c;
   --primary-foreground: #ffffff;
 
-  --secondary: #f3f4f6;
-  --secondary-foreground: #374151;
+  /* Header navy (cf. IRCTC #14344D) */
+  --navy: #0f2b4c;
+  --navy-foreground: #ffffff;
 
-  --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
+  --secondary: #e8edf4;
+  --secondary-foreground: #33475f;
 
-  --accent: #eff6ff;
-  --accent-foreground: #1d4ed8;
+  --muted: #e8edf4;
+  --muted-foreground: #5d6f88;
 
-  --destructive: #dc2626;
+  --accent: #e3ecf7;
+  --accent-foreground: #01478c;
+
+  /* Signal hues — exact, vivid, used for all fills */
+  --destructive: #d60300;
   --destructive-foreground: #ffffff;
+  --ink-destructive: #d60300;
 
-  --success: #16a34a;
+  /* Railway green */
+  --success: #00A860;
   --success-foreground: #ffffff;
+  --ink-success: #2e7d32;
 
-  --warning: #d97706;
-  --warning-foreground: #ffffff;
+  /* Saffron */
+  --warning: #ff7c00;
+  --warning-foreground: #241300;
+  --ink-warning: #c2410c;
 
-  --border: #e5e7eb;
-  --input: #e5e7eb;
-  --ring: #2563eb;
+  --border: #d7e0ec;
+  --input: #d7e0ec;
+  --ring: #01478c;
 
-  --grid-line: #f3f4f6;
+  /* Solid tints (pre-mixed — app code uses no translucent utilities) */
+  --tint-primary: #e2ebf5;
+  --tint-success: #e9f3ea;
+  --tint-warning: #faeee1;
+  --tint-destructive: #fdf1f1;
 
-  /* Train class colors — readable on white */
-  --freight: #2563eb;
-  --express: #0ea5e9;
-  --suburban: #0ea5e9;
+  /* Solid tones for controls on the navy bar */
+  --navy-soft: #1d3a5f;
+  --navy-text: #d7e5f5;
+  --navy-line: #2c4d75;
 
-  --chart-1: var(--freight);
-  --chart-2: var(--express);
-  --chart-3: var(--suburban);
-  --chart-4: var(--warning);
-  --chart-5: var(--destructive);
+  --grid-line: #e8edf4;
+
+  /* Train class colors — navy family + steel grey */
+  --freight: #5d6f88;
+  --express: #01478c;
+  --suburban: #1976d2;
+
+  --train-freight: #5d6f88;
+  --train-express: #01478c;
+  --train-suburban: #1976d2;
+
+  --chart-1: var(--success);
+  --chart-2: var(--warning);
+  --chart-3: var(--primary);
+  --chart-4: var(--destructive);
+  --chart-5: var(--freight);
 }
 
-/* ─── Dark palette (default theme — deep slate, off-white text) ────────────── */
+/* ─── Dark palette — navy-tinted night operations ─────────────────────────── */
 .dark {
-  --background: #0b0e15;
-  --foreground: #e8eaf0;
+  --background: #0a1424;
+  --foreground: #e6ecf5;
 
-  --panel: #111624;
-  --card: #121829;
-  --card-foreground: #e8eaf0;
-  --popover: #161c2e;
-  --popover-foreground: #e8eaf0;
+  --panel: #0f1e35;
+  --card: #101f38;
+  --card-foreground: #e6ecf5;
+  --popover: #13253f;
+  --popover-foreground: #e6ecf5;
 
-  --primary: #5f8dff;
-  --primary-foreground: #0a0f1c;
+  --primary: #6ea8e1;
+  --primary-foreground: #081627;
 
-  --secondary: #1a2236;
-  --secondary-foreground: #c7cddc;
+  --navy: #0c1a30;
+  --navy-foreground: #eef3fa;
 
-  --muted: #1a2236;
-  --muted-foreground: #8f97ad;
+  --secondary: #16294a;
+  --secondary-foreground: #c3d2e6;
 
-  --accent: #152039;
-  --accent-foreground: #93b4ff;
+  --muted: #16294a;
+  --muted-foreground: #8ba0bd;
 
-  --destructive: #f87171;
-  --destructive-foreground: #2a0e0e;
+  --accent: #14294a;
+  --accent-foreground: #9cc4ee;
 
-  --success: #34d399;
-  --success-foreground: #06281c;
+  --destructive: #d60300;
+  --destructive-foreground: #ffffff;
+  --ink-destructive: #ef7070;
 
-  --warning: #fbbf24;
+  --success: #00A860;
+  --success-foreground: #ffffff;
+  --ink-success: #00A860;
+
+  --warning: #ff7c00;
   --warning-foreground: #2f1f04;
+  --ink-warning: #ff7c00;
 
-  --border: #232c47;
-  --input: #232c47;
-  --ring: #5f8dff;
+  --border: #1e3a5f;
+  --input: #1e3a5f;
+  --ring: #6ea8e1;
 
-  --grid-line: #1a2236;
+  /* Solid tints for dark surfaces */
+  --tint-primary: #152c4c;
+  --tint-success: #123324;
+  --tint-warning: #3a2408;
+  --tint-destructive: #3a1414;
+
+  /* Solid tones for controls on the navy bar */
+  --navy-soft: #16294a;
+  --navy-text: #d7e5f5;
+  --navy-line: #1e3a5f;
+
+  --grid-line: #16294a;
 
   /* Train class colors — brightened for dark surfaces */
-  --freight: #7aa8ff;
-  --express: #38bdf8;
-  --suburban: #38bdf8;
+  --freight: #8ba0bd;
+  --express: #6ea8e1;
+  --suburban: #4aa3e8;
 
-  --chart-1: var(--freight);
-  --chart-2: var(--express);
-  --chart-3: var(--suburban);
-  --chart-4: var(--warning);
-  --chart-5: var(--destructive);
+  --train-freight: #8ba0bd;
+  --train-express: #6ea8e1;
+  --train-suburban: #4aa3e8;
+
+  --chart-1: var(--success);
+  --chart-2: var(--warning);
+  --chart-3: var(--primary);
+  --chart-4: var(--destructive);
+  --chart-5: var(--freight);
 }
 
 /* ─── Base ────────────────────────────────────────────────────────────────── */
@@ -174,17 +236,17 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #e5e7eb;
+    background: #b9c6d8;
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #d1d5db;
+    background: #93a5bf;
   }
   .dark ::-webkit-scrollbar-thumb {
-    background: #2a3350;
+    background: #23405f;
   }
   .dark ::-webkit-scrollbar-thumb:hover {
-    background: #38436a;
+    background: #2e5078;
   }
 }
 
@@ -206,7 +268,7 @@
 @utility hatch-alert {
   background-image: repeating-linear-gradient(
     45deg,
-    rgb(220 38 38 / 0.12) 0 5px,
+    rgb(214 3 0 / 0.12) 0 5px,
     transparent 5px 10px
   );
 }
@@ -214,7 +276,7 @@
 @utility hatch-warn {
   background-image: repeating-linear-gradient(
     45deg,
-    rgb(217 119 6 / 0.12) 0 5px,
+    rgb(255 124 0 / 0.12) 0 5px,
     transparent 5px 10px
   );
 }

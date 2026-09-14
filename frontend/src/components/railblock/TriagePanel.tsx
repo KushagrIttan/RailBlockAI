@@ -5,33 +5,33 @@ import type { TriageItem, TriageQueue, TriageTier } from "@/lib/railblock/types"
 // ─── Style maps ───────────────────────────────────────────────────────────────
 
 const TIER_RING: Record<TriageTier, string> = {
-  blocked:  "border-l-4 border-l-red-600",
-  critical: "border-l-4 border-l-red-400",
-  high:     "border-l-4 border-l-orange-400",
-  watch:    "border-l-4 border-l-amber-400",
-  clear:    "border-l-4 border-l-green-400",
+  blocked:  "border-l-4 border-l-destructive",
+  critical: "border-l-4 border-l-destructive",
+  high:     "border-l-4 border-l-warning",
+  watch:    "border-l-4 border-l-warning",
+  clear:    "border-l-4 border-l-success",
 };
 
 const TIER_BADGE: Record<TriageTier, string> = {
-  blocked:  "bg-red-100 text-red-700 border-red-300",
-  critical: "bg-red-50 text-red-600 border-red-200",
-  high:     "bg-orange-50 text-orange-600 border-orange-200",
-  watch:    "bg-amber-50 text-amber-600 border-amber-200",
-  clear:    "bg-green-50 text-green-700 border-green-200",
+  blocked:  "bg-tint-destructive text-ink-destructive border-destructive",
+  critical: "bg-tint-destructive text-ink-destructive border-destructive",
+  high:     "bg-tint-warning text-ink-warning border-warning",
+  watch:    "bg-tint-warning text-ink-warning border-border",
+  clear:    "bg-tint-success text-ink-success border-success",
 };
 
 const TIER_DOT: Record<TriageTier, string> = {
-  blocked:  "bg-red-600",
-  critical: "bg-red-400",
-  high:     "bg-orange-400",
-  watch:    "bg-amber-400",
-  clear:    "bg-green-400",
+  blocked:  "bg-destructive",
+  critical: "bg-destructive",
+  high:     "bg-warning",
+  watch:    "bg-warning",
+  clear:    "bg-success",
 };
 
 const STATUS_STYLE: Record<string, string> = {
-  Scheduled:    "bg-success/15 text-success",
-  Deferred:     "bg-destructive/10 text-destructive",
-  "Shadow Block": "bg-indigo-100 text-indigo-700",
+  Scheduled:    "bg-tint-success text-ink-success",
+  Deferred:     "bg-tint-destructive text-ink-destructive",
+  "Shadow Block": "bg-tint-primary text-primary",
 };
 
 const TIER_ORDER: TriageTier[] = ["blocked", "critical", "high", "watch", "clear"];
@@ -40,12 +40,12 @@ const TIER_ORDER: TriageTier[] = ["blocked", "critical", "high", "watch", "clear
 
 function RollupStrip({ rollup }: { rollup: TriageQueue["rollup"] }) {
   const tiles: { key: TriageTier | "backlog"; label: string; value: number; dot: string }[] = [
-    { key: "blocked",  label: "Blocked",  value: rollup.blocked,  dot: "bg-red-600"    },
-    { key: "critical", label: "Critical", value: rollup.critical, dot: "bg-red-400"    },
-    { key: "high",     label: "High",     value: rollup.high,     dot: "bg-orange-400" },
-    { key: "watch",    label: "Watch",    value: rollup.watch,    dot: "bg-amber-400"  },
-    { key: "clear",    label: "Clear",    value: rollup.clear,    dot: "bg-green-400"  },
-    { key: "backlog",  label: "Backlog",  value: rollup.backlog,  dot: "bg-slate-400"  },
+    { key: "blocked",  label: "Blocked",  value: rollup.blocked,  dot: "bg-destructive"    },
+    { key: "critical", label: "Critical", value: rollup.critical, dot: "bg-destructive" },
+    { key: "high",     label: "High",     value: rollup.high,     dot: "bg-warning"        },
+    { key: "watch",    label: "Watch",    value: rollup.watch,    dot: "bg-warning"     },
+    { key: "clear",    label: "Clear",    value: rollup.clear,    dot: "bg-success"        },
+    { key: "backlog",  label: "Backlog",  value: rollup.backlog,  dot: "bg-muted-foreground"  },
   ];
 
   return (
@@ -70,7 +70,7 @@ function RollupStrip({ rollup }: { rollup: TriageQueue["rollup"] }) {
 function ScoreBar({ score }: { score: number }) {
   const pct = Math.round(score * 100);
   const color =
-    score >= 0.5 ? "bg-red-400" : score >= 0.3 ? "bg-orange-400" : score >= 0.15 ? "bg-amber-400" : "bg-green-400";
+    score >= 0.5 ? "bg-destructive" : score >= 0.3 ? "bg-warning" : score >= 0.15 ? "bg-warning" : "bg-success";
   return (
     <div className="flex items-center gap-2">
       <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
@@ -94,15 +94,15 @@ function TriageRow({ item }: { item: TriageItem }) {
       {/* Collapsed header — always visible */}
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted/70 transition-colors cursor-pointer"
+        className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors cursor-pointer"
       >
         {/* Tier dot */}
         <span className={`size-2 shrink-0 rounded-full ${TIER_DOT[tier]}`} />
 
         {/* Department + taskId */}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[12px] font-semibold text-foreground/90">{item.department}</p>
-          <p className="text-[10px] text-muted-foreground/70">{item.taskId}</p>
+          <p className="truncate text-[12px] font-semibold text-foreground">{item.department}</p>
+          <p className="text-[10px] text-muted-foreground">{item.taskId}</p>
         </div>
 
         {/* Score bar */}
@@ -128,15 +128,15 @@ function TriageRow({ item }: { item: TriageItem }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="border-t border-border/60 px-4 py-3 text-[11px] space-y-3">
+        <div className="border-t border-border px-4 py-3 text-[11px] space-y-3">
 
           {/* Recommendation banner */}
           <div className={`flex items-start gap-2 rounded-md border px-3 py-2 ${
             tier === "blocked" || tier === "critical"
-              ? "border-red-200 bg-red-50 text-red-800"
+              ? "border-destructive bg-tint-destructive text-ink-destructive"
               : tier === "high"
-              ? "border-orange-200 bg-orange-50 text-orange-800"
-              : "border-green-200 bg-green-50 text-green-800"
+              ? "border-warning bg-tint-warning text-ink-warning"
+              : "border-success bg-tint-success text-ink-success"
           }`}>
             {tier === "blocked" || tier === "critical"
               ? <AlertOctagon className="size-3.5 mt-0.5 shrink-0" />
@@ -189,7 +189,7 @@ function TriageRow({ item }: { item: TriageItem }) {
                 {item.requirements.map((r) => (
                   <span
                     key={r}
-                    className="flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[9px] font-medium text-amber-800"
+                    className="flex items-center gap-1 rounded-full border border-warning bg-tint-warning px-2 py-0.5 text-[9px] font-medium text-ink-warning"
                   >
                     <ShieldAlert className="size-2.5" />
                     {r}
@@ -207,8 +207,8 @@ function TriageRow({ item }: { item: TriageItem }) {
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground/60">{label}</p>
-      <p className="text-[11px] font-semibold text-foreground/80">{value}</p>
+      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-[11px] font-semibold text-foreground">{value}</p>
     </div>
   );
 }
@@ -217,8 +217,8 @@ function ScoreBreakdown({ label, value, weight }: { label: string; value: number
   const contribution = Math.round(value * weight * 100) / 100;
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-[10px] text-muted-foreground/80">{label}</span>
-      <span className="num text-[10px] font-semibold tabular-nums text-foreground/70">
+      <span className="text-[10px] text-muted-foreground">{label}</span>
+      <span className="num text-[10px] font-semibold tabular-nums text-foreground">
         +{contribution.toFixed(2)}
       </span>
     </div>
@@ -252,11 +252,11 @@ export function TriagePanel({ triage }: { triage: TriageQueue | null | undefined
         </div>
         <div className="flex items-center gap-2">
           {urgentCount > 0 && (
-            <span className="rounded-full border border-red-300 bg-red-50 px-2.5 py-0.5 text-[10px] font-semibold text-red-700">
+            <span className="rounded-full border border-destructive bg-tint-destructive px-2.5 py-0.5 text-[10px] font-semibold text-ink-destructive">
               {urgentCount} need attention
             </span>
           )}
-          <span className="rounded-full bg-gray-200 px-2.5 py-0.5 text-[10px] font-semibold text-gray-600">
+          <span className="rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
             Highest risk {rollup.highestRisk.toFixed(2)}
           </span>
         </div>
@@ -297,7 +297,7 @@ export function TriagePanel({ triage }: { triage: TriageQueue | null | undefined
         )}
       </div>
 
-      <p className="border-t border-border bg-muted/60 px-5 py-2 text-[10px] text-muted-foreground/60">
+      <p className="border-t border-border bg-muted px-5 py-2 text-[10px] text-muted-foreground">
         Scores: 0.45 × ML risk + 0.25 × train exposure + 0.15 × age + 0.15 × safety requirements.
         Synthetic data only — not live telemetry.
       </p>
@@ -321,8 +321,8 @@ function FilterPill({
       title={value}
       className={`flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold transition-colors cursor-pointer ${
         active
-          ? "border-primary bg-primary/10 text-primary"
-          : "border-border bg-card text-muted-foreground hover:bg-accent/40"
+          ? "border-primary bg-tint-primary text-primary"
+          : "border-border bg-card text-muted-foreground hover:bg-accent"
       }`}
     >
       {dot && <span className={`size-1.5 rounded-full ${dot}`} />}

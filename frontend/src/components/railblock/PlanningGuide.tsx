@@ -29,9 +29,9 @@ export function PlanningGuide({ open, onOpenChange }: { open: boolean; onOpenCha
             const Icon = step.icon;
             return (
               <li key={step.title} className="flex gap-3">
-                <div className="grid size-8 shrink-0 place-items-center rounded-full bg-success/12 text-success"><Icon className="size-4" /></div>
+                <div className="grid size-8 shrink-0 place-items-center rounded-full bg-success/12 text-ink-success"><Icon className="size-4" /></div>
                 <div>
-                  <p className="text-sm font-medium"><span className="num mr-2 text-success">{index + 1}.</span>{step.title}</p>
+                  <p className="text-sm font-medium"><span className="num mr-2 text-ink-success">{index + 1}.</span>{step.title}</p>
                   <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{step.description}</p>
                 </div>
               </li>
