@@ -348,6 +348,12 @@ export default function App() {
                   </button>
                 ))}
               </div>
+              <span
+                title="Weekly and Monthly horizons replay the Sept 14 saved-timetable snapshot (demo fixture — see DATA_REALITY_AND_MIGRATION.md)"
+                className="rounded-full border border-border bg-muted px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground"
+              >
+                Replay snapshot · Sept 14
+              </span>
 
               {dayBreakdown.length > 1 && (
                 <div className="flex flex-wrap items-center gap-1.5">

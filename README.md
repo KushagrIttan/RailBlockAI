@@ -110,6 +110,8 @@ start-demo.bat / stop-demo.bat   one-command demo lifecycle
 ## Status & roadmap
 
 Working: full generate pipeline (verified HTTP 200 with real scheduled blocks), ML-active
-prioritization, Gantt + approval UI, triage queue. Known gaps: tiny single-corridor demo
-dataset, approve/reject verdicts are UI-local (no persistence endpoint yet), weekly/monthly
-horizons day-shift a single frozen day. See team plan for the SIH submission phases.
+prioritization, Gantt + approval UI, triage queue, approve/reject verdicts via
+`POST /api/decisions` (in-memory by design — resets on restart so the demo always
+opens with live conflicts to interact with). Known gaps: tiny single-corridor demo
+dataset; weekly/monthly horizons replay the Sept 14 saved-timetable snapshot
+(badged in the UI). See team plan for the SIH submission phases.
