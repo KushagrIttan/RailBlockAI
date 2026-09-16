@@ -3,10 +3,13 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock3,
+  Minus,
+  Plus,
   ShieldCheck,
   TrainFront,
   Wrench,
 } from "lucide-react";
+import { useState } from "react";
 import { SLOT_COUNT } from "@/lib/railblock/service";
 import type { ShadowBlock, Train } from "@/lib/railblock/types";
 
@@ -16,10 +19,21 @@ const CLASS_STYLE: Record<Train["trainClass"], string> = {
   suburban: "border-train-suburban bg-tint-primary text-train-suburban",
 };
 
+const ZOOM_LABEL = ["Fit", "150%", "220%"];
+
 function sectionLabel(section: string) {
   if (section === "DLI-GZB-DN") return "Delhi → Ghaziabad";
   if (section === "NDLS-NDB-DN") return "New Delhi → Nizamuddin";
   return section;
+}
+
+function deptAbbr(department?: string) {
+  if (!department) return null;
+  const d = department.toLowerCase();
+  if (d.includes("signal") || d.includes("s&t") || d.includes("telecom")) return "S&T";
+  if (d.includes("traction") || d.includes("ohe") || d.includes("power")) return "TRD";
+  if (d.includes("engineer")) return "ENG";
+  return department.slice(0, 3).toUpperCase();
 }
 
 export function TrackView({
@@ -43,6 +57,7 @@ export function TrackView({
 }) {
   const slots = Array.from({ length: SLOT_COUNT }, (_, i) => i);
   const nowSlot = Math.round((windowOffset / 100) * (SLOT_COUNT - 1));
+  const [zoom, setZoom] = useState(0);
 
   const windowLabel = (() => {
     const totalSlots = SLOT_COUNT - 1;
@@ -72,19 +87,28 @@ export function TrackView({
           </h2>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
-            3 Simulated Situations
-          </span>
-          <span className="rounded-full bg-tint-success px-2.5 py-0.5 text-[10px] font-medium text-ink-success border border-success">
-            Saved timetable
+          <div className="flex items-center gap-0.5 rounded-md border border-border bg-card p-0.5" title="Chart zoom — widen the timeline to read dense blocks">
+            <button onClick={() => setZoom((z) => Math.max(0, z - 1))} disabled={zoom === 0} className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent disabled:opacity-40" aria-label="Zoom out">
+              <Minus className="size-3" />
+            </button>
+            <span className="num w-10 text-center text-[10px] font-semibold text-muted-foreground">{ZOOM_LABEL[zoom]}</span>
+            <button onClick={() => setZoom((z) => Math.min(2, z + 1))} disabled={zoom === 2} className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent disabled:opacity-40" aria-label="Zoom in">
+              <Plus className="size-3" />
+            </button>
+          </div>
+          <span
+            title="Weekly and Monthly horizons replay the Sept 14 saved-timetable snapshot (demo fixture — see DATA_REALITY_AND_MIGRATION.md)"
+            className="rounded-full border border-success bg-tint-success px-2.5 py-0.5 text-[10px] font-medium text-ink-success"
+          >
+            {shadowBlocks.length} situations · saved timetable
           </span>
         </div>
       </div>
 
-      {/* Scenario switcher pills */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card px-5 py-2 text-xs">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-1">
-          Scenarios:
+      {/* Scenario switcher — compact single-row strip so the chart sits near the fold */}
+      <div className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap border-b border-border bg-card px-5 py-1.5 text-xs">
+        <span className="num shrink-0 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          {shadowBlocks.filter((sb) => !sb.resolved).length}/{shadowBlocks.length} open ·
         </span>
         {shadowBlocks.map((sb, idx) => {
           const isSelected = activeBlock?.id === sb.id;
@@ -93,8 +117,8 @@ export function TrackView({
           const statusBadge = sb.resolved
             ? "border-border bg-muted text-muted-foreground line-through"
             : sb.status === "scheduled"
-              ? "border-[#00A860] bg-[#00A860] text-success-foreground"
-              : "border-[#D60300] bg-[#D60300] text-white";
+              ? "border-success bg-success text-success-foreground"
+              : "border-destructive bg-destructive text-white";
 
           const icon = sb.resolved ? (
             <ShieldCheck className="size-3 text-muted-foreground" />
@@ -110,7 +134,7 @@ export function TrackView({
             <button
               key={sb.id}
               onClick={() => onSelectConflict?.(sb.conflictId)}
-              className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium cursor-pointer ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-medium cursor-pointer ${
                 isSelected
                   ? sb.resolved
                     ? "border-muted-foreground bg-muted text-muted-foreground"
@@ -132,9 +156,12 @@ export function TrackView({
         })}
       </div>
 
+      {/* Chart scroll region — zoom widens the timeline, the label column sticks */}
+      <div className="overflow-x-auto">
+        <div style={zoom > 0 ? { minWidth: `${100 + zoom * 60}%` } : undefined}>
       {/* Time axis */}
       <div className="flex border-b border-border bg-muted">
-        <div className="w-32 shrink-0 border-r border-border px-4 py-2 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+        <div className="sticky left-0 z-10 w-44 shrink-0 border-r border-border bg-muted px-4 py-2 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
           Track section
         </div>
         <div
@@ -156,14 +183,14 @@ export function TrackView({
       <div className="relative">
         {/* NOW marker */}
         <div
-          className="pointer-events-none absolute bottom-0 top-0 z-30 w-px bg-success"
+          className="pointer-events-none absolute bottom-0 top-0 z-30 w-px bg-indigo-500"
           style={{
-            left: `calc(8rem + ${((nowSlot + 0.5) / SLOT_COUNT) * 100}% - ${
-              ((nowSlot + 0.5) / SLOT_COUNT) * 8
+            left: `calc(11rem + ${((nowSlot + 0.5) / SLOT_COUNT) * 100}% - ${
+              ((nowSlot + 0.5) / SLOT_COUNT) * 11
             }rem)`,
           }}
         >
-          <span className="absolute -top-0.5 -translate-x-1/2 rounded bg-success px-1.5 py-0.5 text-[8px] font-bold text-success-foreground shadow-xs">
+          <span className="absolute -top-0.5 -translate-x-1/2 rounded bg-indigo-500 px-1.5 py-0.5 text-[8px] font-bold text-white shadow-xs">
             {windowLabel}
           </span>
         </div>
@@ -181,8 +208,8 @@ export function TrackView({
                 idx % 2 === 0 ? "" : "bg-muted"
               }`}
             >
-              <div className="flex w-32 shrink-0 flex-col justify-center border-r border-border px-4 py-4">
-                <span className="text-xs font-semibold text-foreground">
+              <div className={`sticky left-0 z-10 flex w-44 shrink-0 flex-col justify-center border-r border-border px-4 py-4 ${idx % 2 === 0 ? "bg-card" : "bg-muted"}`}>
+                <span className="truncate text-xs font-semibold text-foreground" title={sectionLabel(sector)}>
                   {sectionLabel(sector)}
                 </span>
                 <span className="mt-0.5 text-[10px] text-muted-foreground">
@@ -239,7 +266,6 @@ export function TrackView({
                                     let styleClass = "";
                                     let icon = <AlertTriangle className="size-2.5 shrink-0" />;
                                     let statusTag = "";
-                                    let pulseClass = "";
 
                                     if (sb.status === "scheduled") {
                                       styleClass = isSelected
@@ -253,7 +279,6 @@ export function TrackView({
                                         : "border border-dashed border-destructive bg-tint-destructive text-ink-destructive hover:border-destructive";
                                       icon = <AlertOctagon className="size-3 shrink-0 text-ink-destructive" />;
                                       statusTag = "❌ Blocked by Peak Traffic";
-                                      pulseClass = "animate-pulse";
                                     } else {
                                       styleClass = isSelected
                                         ? "border-2 border-dashed border-warning bg-tint-warning text-ink-warning ring-2 ring-warning shadow-md z-25"
@@ -267,13 +292,18 @@ export function TrackView({
                                         key={sb.id}
                                         onClick={() => onSelectConflict?.(sb.conflictId)}
                                         title={`${sb.label} · ${sb.conflictReason ?? ""}`}
-                                        className={`absolute top-2 z-20 flex h-9.5 items-center gap-1.5 overflow-hidden rounded-md px-2 text-left text-[10px] font-semibold transition-all cursor-pointer ${styleClass} ${pulseClass}`}
+                                        className={`absolute top-2 z-20 flex h-9.5 min-w-28 items-center gap-1.5 overflow-hidden rounded-md px-2 text-left text-[10px] font-semibold transition-all cursor-pointer ${styleClass}`}
                       style={{
                         left: `${(sb.startSlot / SLOT_COUNT) * 100}%`,
                         width: `${(sb.span / SLOT_COUNT) * 100}%`,
                       }}
                     >
                       {icon}
+                      {deptAbbr(sb.department) && (
+                        <span className="shrink-0 rounded bg-black/15 px-1 py-px text-[8px] font-bold tracking-wide">
+                          {deptAbbr(sb.department)}
+                        </span>
+                      )}
                       <div className="flex flex-col overflow-hidden leading-tight">
                         <span className="truncate">{sb.label}</span>
                         <span className="text-[8.5px] font-medium opacity-85 truncate">
@@ -293,14 +323,14 @@ export function TrackView({
                   let trainStyle = style;
                   if (isClashing) {
                     trainStyle =
-                      "border-destructive bg-tint-destructive text-ink-destructive font-bold ring-2 ring-destructive animate-pulse shadow-sm";
+                      "border-destructive bg-tint-destructive text-ink-destructive font-bold ring-2 ring-destructive shadow-sm";
                   }
 
                   return (
                     <button
                       key={t.id}
                       onClick={() => onSelectTrain(active ? null : t.id)}
-                      className={`absolute z-10 flex h-6.5 items-center gap-1.5 overflow-hidden rounded border px-2 text-left text-[9px] transition-all hover:opacity-100 hover:shadow-xs cursor-pointer ${trainStyle} ${
+                      className={`absolute z-10 flex h-6.5 items-center gap-1.5 overflow-hidden rounded border px-2 text-left text-[9px] transition-all hover:opacity-100 hover:shadow-xs cursor-pointer ${trainStyle} ${isClashing && active ? "animate-pulse" : ""} ${
                         isClashing
                           ? "opacity-100 z-20"
                           : active
@@ -334,6 +364,8 @@ export function TrackView({
             </div>
           );
         })}
+      </div>
+        </div>
       </div>
 
       {/* Explainer Callout Bar for Active Situation */}

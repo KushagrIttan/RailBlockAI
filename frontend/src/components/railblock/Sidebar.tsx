@@ -128,7 +128,7 @@ export function Sidebar({
               tone={kpis.activeConflicts > 0 ? "danger" : "success"}
             />
             <KpiChip
-              label="Disruption avoided"
+              label="Est. disruption avoidable"
               value={`${kpis.avgDelaySavedMinutes.toFixed(1)} min`}
               tone="warning"
             />
@@ -140,12 +140,12 @@ export function Sidebar({
           </div>
         </div>
 
-        {/* Detailed Metrics from Optimizer */}
+        {/* Detailed Metrics from Optimizer — collapsed; the glance KPIs tell the story */}
         {metrics && (
-          <div>
-            <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-secondary-foreground">
+          <details>
+            <summary className="mb-1.5 cursor-pointer px-3 text-[10px] font-semibold uppercase tracking-widest text-secondary-foreground marker:text-muted-foreground">
               Optimizer Metrics
-            </p>
+            </summary>
             <div className="space-y-1.5">
               <KpiChip
                 label="Scheduled / Total"
@@ -184,7 +184,7 @@ export function Sidebar({
                 tone={metrics.resourceConflicts > 0 ? "danger" : "success"}
               />
             </div>
-          </div>
+          </details>
         )}
       </nav>
 

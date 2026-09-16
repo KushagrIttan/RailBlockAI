@@ -171,8 +171,8 @@ export default function App() {
           kpis: {
             ...prev.kpis,
             activeConflicts: Math.max(0, prev.kpis.activeConflicts - 1),
-            avgDelaySavedMinutes:
-              Math.round((prev.kpis.avgDelaySavedMinutes + activeRecommendation.delaySavedMinutes) * 10) / 10,
+            // avgDelaySavedMinutes already holds the upfront estimate across
+            // all recommendations (see service.ts) — don't double-count here.
             throughputEfficiencyPct:
               Math.round(Math.min(99.9, prev.kpis.throughputEfficiencyPct + activeRecommendation.throughputDeltaPct) * 10) / 10,
           },
@@ -261,6 +261,11 @@ export default function App() {
     throughputEfficiencyPct: 0,
   };
 
+  // Dev diagnostics stay hidden in judged demos unless ?debug is present.
+  const showDebug =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).has("debug");
+
   return (
     /* Root: full viewport, horizontal flex */
     <div className="flex h-screen overflow-hidden bg-background">
@@ -291,20 +296,13 @@ export default function App() {
         {/* Scrollable page body */}
         <div className="flex-1 overflow-y-auto">
 
-          {/* Hero banner */}
-          <div
-            className="mx-6 mt-6 overflow-hidden rounded-xl bg-tint-primary border border-primary"
-            style={{ height: "140px" }}
-          >
-            <div className="relative h-full w-full overflow-hidden">
-              {/* Corridor title overlaid */}
-              <div className="absolute bottom-5 left-6">
-                <p className="text-[11px] font-medium uppercase tracking-widest text-primary">Maintenance Planning</p>
-                <h1 className="mt-1 text-xl font-bold tracking-tight text-foreground">
-                  {corridor.label}
-                </h1>
-              </div>
-            </div>
+          {/* Corridor strip — neutral card with a navy edge; status tints stay on data */}
+          <div className="mx-6 mt-4 flex items-center gap-3 overflow-hidden rounded-lg border border-border border-l-4 border-l-primary bg-card px-5 py-2.5">
+            <p className="shrink-0 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Maintenance Planning</p>
+            <span className="h-4 w-px shrink-0 bg-border" />
+            <h1 className="truncate text-base font-bold tracking-tight text-foreground">
+              {corridor.label}
+            </h1>
           </div>
 
           {/* Error banner */}
@@ -365,7 +363,7 @@ export default function App() {
                       key={day.date}
                       onClick={() => { setSelectedDay(i); setSelectedConflictId(null); setSimulation(null); }}
                       title={`${day.scheduled} scheduled · ${day.deferred} deferred · ${day.availabilityGainPct}% window used`}
-                      className={`rounded-md border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                      className={`num rounded-md border px-2.5 py-1 text-[11px] font-medium transition-colors ${
                         i === clampedDay
                           ? "border-primary bg-primary text-primary-foreground"
                           : "border-border bg-background text-muted-foreground hover:bg-accent"
@@ -477,8 +475,10 @@ export default function App() {
             <LogStream logs={logs} />
           </div>
 
-          {/* Debug drawer (sticky at bottom of scroll area) */}
-          <DebugDrawer open={debugOpen} onToggle={() => setDebugOpen((v) => !v)} payload={schedule} />
+          {/* Debug drawer — only with ?debug, so judged demos stay clean */}
+          {showDebug && (
+            <DebugDrawer open={debugOpen} onToggle={() => setDebugOpen((v) => !v)} payload={schedule} />
+          )}
         </div>
       </div>
 

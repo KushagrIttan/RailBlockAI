@@ -71,7 +71,10 @@ export function TopBar({
       </Button>
 
       {/* Time window slider + time + badge: fixed snug cluster, pinned right */}
-      <div className="ml-auto flex w-80 shrink-0 items-center gap-2">
+      <div className="ml-auto flex w-80 shrink-0 items-center gap-2" title="Simulation clock — drag to move the timeline marker on the chart">
+        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-navy-text">
+          Timeline
+        </span>
         <Gauge className="size-4 shrink-0 text-navy-text" />
         <Slider
           value={[windowOffset]}

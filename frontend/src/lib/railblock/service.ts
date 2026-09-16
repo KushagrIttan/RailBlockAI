@@ -267,6 +267,11 @@ export async function fetchOptimizationSchedule(
 
     // Extract detailed metrics from the backend response
     const metrics = apiResult.metrics ?? null;
+    const recommendations = apiResult.recommendations ?? [];
+    // Estimated avoidable disruption across all suggested windows — shown
+    // upfront in "At a glance" instead of a 0.0 hero metric.
+    const potentialDelaySavedMinutes =
+      Math.round(recommendations.reduce((s: number, r) => s + (r.delaySavedMinutes ?? 0), 0) * 10) / 10;
 
     return {
       engine: "Timetable Replay Planner",
@@ -276,13 +281,13 @@ export async function fetchOptimizationSchedule(
       kpis: {
         trainsMonitored: apiResult.totalTasks,
         activeConflicts: conflicts.length,
-        avgDelaySavedMinutes: 0,
+        avgDelaySavedMinutes: potentialDelaySavedMinutes,
         throughputEfficiencyPct: throughputPct,
       },
       trains,
       shadowBlocks,
       conflicts,
-      recommendations: apiResult.recommendations ?? [],
+      recommendations,
       replayContext: apiResult.replayContext,
       horizon: apiResult.horizon,
       planningDays: apiResult.planningDays,
